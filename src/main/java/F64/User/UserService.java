@@ -1,9 +1,7 @@
-package F64.Service;
+package F64.User;
 
-import F64.Model.Member;
-import F64.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -11,13 +9,13 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-
+    private final PasswordEncoder passwordEncoder;
     public Member create(String username, String password, String nickname){
         Member member = new Member();
         member.setUsername(username);
-        member.setNickname(nickname);
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         member.setPassword(passwordEncoder.encode(password));
+        member.setNickname(nickname);
+        this.userRepository.save(member);
         return member;
     }
 }
