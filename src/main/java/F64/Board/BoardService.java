@@ -1,9 +1,9 @@
 package F64.Board;
 
-import F64.User.UserRepository;
+import F64.User.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import F64.User.CustomUser;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,11 +13,17 @@ public class BoardService {
     BoardRepository boardRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserSecurityService userSecurityService;
+
 
     //게시글 쓰기
     public void write(Board board) {
         board.setCreatedDate(LocalDate.now());
+
+        CustomUser user = userSecurityService.getCurrentUser();
+        String nickname = user.getNickname();
+        board.setWriter(nickname);
+
         boardRepository.save(board);
     }
 
