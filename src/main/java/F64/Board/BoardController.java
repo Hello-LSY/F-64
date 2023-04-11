@@ -21,28 +21,13 @@ import java.util.Optional;
 public class BoardController {
 
     @Autowired
-    BoardService boardService;
-    UserRepository userRepository;
+    private BoardService boardService;
+    @Autowired
+    private UserRepository userRepository;
     @GetMapping("/list")
     public String BoardForm(Model model){
         List<Board> boardList = boardService.getBoardList();
         model.addAttribute("boardList", boardList);
-
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String un = authentication.getName();
-//        String message = "안녕하세요! ";
-//        if (authentication.getPrincipal() instanceof Member) {
-//            Member mem = (Member) authentication.getPrincipal();
-//            message += mem.getNickname() + "님!";
-//        }
-//        else {
-//            message += un + "님!";
-//        }
-//        System.out.println(message);
-
-
-
-
         return "listForm";
     }
 
@@ -67,5 +52,25 @@ public class BoardController {
         model.addAttribute("board", board);
         return "boardView";
     }
+
+    @PostMapping("/like/{id}")
+    public String likeBoard(@PathVariable("id") Long id) {
+        // 현재 로그인한 사용자 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        // 사용자가 존재하는지 확인하고 존재한다면 Member 객체 생성
+        Optional<Member> optionalMember = userRepository.findByusername(currentUsername);
+        if (!optionalMember.isPresent()) {
+            throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
+        }
+        Member member = optionalMember.get();
+
+        // 해당 id에 해당하는 게시글에 대해 추천 기능 실행
+        boardService.likeBoard(id, member);
+
+        return "redirect:/board/view/" + id;
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package F64.Board;
 
+import F64.User.Member;
 import F64.User.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,10 @@ import java.util.List;
 @Service
 public class BoardService {
     @Autowired
-    BoardRepository boardRepository;
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private BoardLikeRepository boardLikeRepository;
 
     @Autowired
     private UserSecurityService userSecurityService;
@@ -38,4 +42,25 @@ public class BoardService {
     public List<Board> getBoardList() {
         return boardRepository.findAll();
     }
+
+    public void likeBoard(Long boardId, Member member) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid board id: " + boardId));
+
+        // 중복 추천을 막기 위해 한 회원이 한 게시글에 대해 여러 번 추천하지 못하게 함
+        if (boardLikeRepository.findByBoardAndMember(board, member).isPresent()) {
+            throw new IllegalStateException("이미 추천한 게시물입니다.");
+        }
+
+        // BoardLike 엔티티 생성 및 저장
+        BoardLike boardLike = new BoardLike();
+        boardLike.setBoard(board);
+        boardLike.setMember(member);
+        boardLikeRepository.save(boardLike);
+
+        // 해당 게시글(Board)에 대한 추천 수 증가
+        board.setLikeCount(board.getLikeCount() + 1);
+        boardRepository.save(board);
+    }
+
 }

@@ -14,6 +14,7 @@
         <th>작성자</th>
         <th>작성일자</th>
         <th>조회수</th>
+        <th>추천수</th>
     </tr>
     </thead>
     <tbody>
@@ -24,6 +25,7 @@
         <td th:text="${board.writer}"></td>
         <td th:text="${board.createdDate}"></td>
         <td th:text="${board.viewCount}"></td>
+        <td th:text="${board.likeCount}"></td>
     </tr>
     </tbody>
 </table>

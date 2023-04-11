@@ -18,4 +18,6 @@ public class Board {
 
     private LocalDate createdDate;
     private int viewCount;
+    private int likeCount;
+
 }

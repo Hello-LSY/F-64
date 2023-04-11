@@ -1,10 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <title>게시글 상세보기</title>
 </head>
 <body>
+<script>
+$(document).ready(function() {
+    $('#like-button').submit(function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            success: function() {
+                location.reload();
+            },
+            error: function() {
+                alert('이미 추천한 게시물입니다.');
+            }
+        });
+    });
+});
+</script>
 <h1>게시글 상세보기</h1>
 <table>
   <tbody>
@@ -27,6 +46,13 @@
     <th>내용</th>
     <td th:text="${board.content}"></td>
   </tr>
+  <tr>
+    <th>추천수</th>
+    <td th:text="${board.likeCount}"></td>
+  </tr>
+  <form id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
+    <button type="submit" class="btn btn-primary">추천</button>
+  </form>
   </tbody>
 </table>
 </body>
