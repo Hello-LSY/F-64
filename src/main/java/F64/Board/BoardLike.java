@@ -7,7 +7,6 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@Table(name = "boardlike")
 public class BoardLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

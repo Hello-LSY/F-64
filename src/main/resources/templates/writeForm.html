@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>글쓰기</h1>
-<form action="#" th:action="@{/board/writePro}" th:object="${board}" method="post">
+<form method="post" th:action="@{/board/writePro}" th:object="${board}">
     <div>
         <label for="title">제목</label>
         <input type="text" id="title" name="title" required="required"

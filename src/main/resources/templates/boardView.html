@@ -1,59 +1,130 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
+  <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
   <title>게시글 상세보기</title>
+  <style>
+    </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/"> F-64 홈페이지 </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+      <!-- 로그인 상태인 경우 로그아웃 버튼 보이기 -->
+      <li class="nav-item" sec:authorize="isAuthenticated()">
+        <form class="form-inline" th:action="@{/user/logout}" method="post">
+          <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">로그아웃</button>
+        </form>
+      </li>
+      <!-- 로그아웃 상태인 경우 로그인 버튼 보이기 -->
+      <li class="nav-item" sec:authorize="!isAuthenticated()">
+        <a class="nav-link" href="/user/login">로그인</a>
+      </li>
+      <li class="nav-item" sec:authorize="!isAuthenticated()">
+        <a class="nav-link" href="user/signup">회원가입</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">홈</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="board/list">자유 게시판</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">출사지 신청</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">문의</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 <script>
-$(document).ready(function() {
-    $('#like-button').submit(function(e) {
-        e.preventDefault();
-
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            success: function() {
-                location.reload();
-            },
-            error: function() {
-                alert('이미 추천한 게시물입니다.');
-            }
-        });
-    });
-});
 </script>
-<h1>게시글 상세보기</h1>
-<table>
+
+<style>
+    table {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 20px;
+        gap: 10px;
+    }
+
+
+    .btn {
+        margin-right: 1px;
+    }
+
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+        padding-bottom: 10px;
+    }
+
+    .content {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .info {
+        font-size: 14px;
+    }
+
+    .info span {
+        margin-right: 10px;
+    }
+</style>
+
+<table class="table">
   <tbody>
   <tr>
-    <th>제목</th>
-    <td th:text="${board.title}"></td>
+    <td class="title" colspan="2" th:text="${board.title}"></td>
   </tr>
   <tr>
-    <th>작성자</th>
-    <td th:text="${board.writer}"></td>
-  </tr>
-    <th>작성일자</th>
-    <td th:text="${board.createdDate}"></td>
-  </tr>
-  <tr>
-    <th>조회수</th>
-    <td th:text="${board.viewCount}"></td>
-  </tr>
-  <tr>
-    <th>내용</th>
-    <td th:text="${board.content}"></td>
+    <td colspan="2" class="info">
+      <span>작성자:</span>
+      <span th:text="${board.writer_Nickname}"></span>
+      <span>작성일자:</span>
+      <span th:text="${board.createdDate}"></span>
+      <span>조회수:</span>
+      <span th:text="${board.viewCount}"></span>
+      <span>추천수:</span>
+      <span th:text="${board.likeCount}"></span>
+    </td>
   </tr>
   <tr>
-    <th>추천수</th>
-    <td th:text="${board.likeCount}"></td>
+    <td class="content" colspan="2" th:text="${board.content}"></td>
   </tr>
-  <form id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
-    <button type="submit" class="btn btn-primary">추천</button>
-  </form>
+  <tr>
+    <td colspan="2" class="btn-group">
+      <form id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
+        <button type="submit" class="btn btn-success">추천</button>
+      </form>
+      <form id="back" method="get" th:action="@{/board/list}">
+        <button type="submit" class="btn btn-primary">글 목록</button>
+      </form>
+      <form th:if="${isWriter}" id="update" method="get" th:action="@{/board/update/{id}(id=${board.id})}">
+        <button type="submit" class="btn btn-warning">글 수정</button>
+      </form>
+    </td>
+  </tr>
   </tbody>
 </table>
+
+
+
 </body>
 </html>

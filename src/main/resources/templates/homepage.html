@@ -1,20 +1,29 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<<html xmlns:th="http://www.thymeleaf.org"
+       xmlns:c="http://www.thymeleaf.org/extras/spring-security"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
     <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+    <style>
+         .navbar-nav.ml-auto .nav-item:nth-child(1) {
+          margin-right: 10px;
+          font-size: 1.2rem;
+          }
+    </style>
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">F-64</a>
+    <a class="navbar-brand" href="/"> <img th:src="@{/images/f64.png}" height="35px" alt="photo"> </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item" sec:authorize="isAuthenticated()">
-                안녕하세요, <span th:text="${nickname}"></span>님
+                <span th:text="${nickname}">  </span>
             </li>
             <!-- 로그인 상태인 경우 로그아웃 버튼 보이기 -->
             <li class="nav-item" sec:authorize="isAuthenticated()">
@@ -46,8 +55,37 @@
         </ul>
     </div>
 </nav>
-<h1 th:text="${title}"></h1>
-<p th:text="${description}"></p>
-<img th:src="@{/images/f64.png}" alt="photo">
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>자유게시판</h2>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">제목</th>
+                    <th scope="col">작성자</th>
+                    <th scope="col">작성일</th>
+                    <th scope="col">조회수</th>
+                    <th scope="col">추천수</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="board : ${boardList}">
+                    <td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
+                    <td th:text="${board.writer_Nickname}"></td>
+                    <td th:text="${board.createdDate}"></td>
+                    <td th:text="${board.viewCount}"></td>
+                    <td th:text="${board.likeCount}"></td>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <!-- 여기에 광고나 기타 내용을 보여주는 코드를 작성해주세요 -->
+        </div>
+    </div>
+</div>
+
+
+
 </body>
 </html>

@@ -1,12 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
     <title>게시판 목록</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/bootstrap.min.js"></script>
+    <style>
+        /* 테이블 스타일 */
+        table {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-<h1>게시판 목록</h1>
-<table>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/"> F-64 홈페이지 </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <!-- 로그인 상태인 경우 로그아웃 버튼 보이기 -->
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <form class="form-inline" th:action="@{/user/logout}" method="post">
+                    <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">로그아웃</button>
+                </form>
+            </li>
+            <!-- 로그아웃 상태인 경우 로그인 버튼 보이기 -->
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a class="nav-link" href="/user/login">로그인</a>
+            </li>
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a class="nav-link" href="user/signup">회원가입</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">홈</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="board/list">자유 게시판</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">출사지 신청</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">문의</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- 게시판 목록 테이블 -->
+<table class="table table-striped">
     <thead>
     <tr>
         <th>번호</th>
@@ -22,13 +68,12 @@
     <tr th:each="board : ${boardList}">
         <td th:text="${board.id}"></td>
         <td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
-        <td th:text="${board.writer}"></td>
+        <td th:text="${board.writer_Nickname}"></td>
         <td th:text="${board.createdDate}"></td>
         <td th:text="${board.viewCount}"></td>
         <td th:text="${board.likeCount}"></td>
     </tr>
     </tbody>
 </table>
-<a th:if="${#httpServletRequest.getRemoteUser() != null}" th:href="@{/board/write}" class="btn btn-primary">글쓰기</a>
 </body>
 </html>

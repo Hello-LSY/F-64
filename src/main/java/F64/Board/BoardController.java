@@ -8,10 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +22,10 @@ public class BoardController {
     private BoardService boardService;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BoardRepository boardRepository;
+
     @GetMapping("/list")
     public String BoardForm(Model model){
         List<Board> boardList = boardService.getBoardList();
@@ -44,33 +46,62 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
+    @GetMapping("update/{id}")
+    public String BoardUpdate(@PathVariable Long id, Model model){
+        //id에 해당하는 게시물 가져오기
+        Board board = boardService.getBoardById(id);
+        //board 속성 넘겨줌
+        model.addAttribute("board", board);
+        return "updateForm";
+    }
 
+    @PostMapping("updatePro/{id}")
+    public String BoardUpdatePro(@PathVariable Long id,  @ModelAttribute Board board){
+        boardService.updateBoard(id, board);
+        return "redirect:/board/list";
+    }
 
     @GetMapping("view/{id}")
-    public String BoardView(@PathVariable Long id, Model model){
-        Board board = boardService.getBoard(id);
+    public String BoardView(@PathVariable Long id, Model model, Authentication authentication){
+        Board board = boardService.getBoardAndIncreaseViewCount(id);
         model.addAttribute("board", board);
+
+        boolean isWriter = false;
+        if(authentication != null){
+            String username = authentication.getName();
+            if(username.equals(board.getWriter_Username())){
+                isWriter = true;
+            }
+        }
+        model.addAttribute("isWriter",isWriter);
+
         return "boardView";
     }
 
+
     @PostMapping("/like/{id}")
-    public String likeBoard(@PathVariable("id") Long id) {
-        // 현재 로그인한 사용자 가져오기
+    public ModelAndView likeBoard(@PathVariable("id") Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
-        // 사용자가 존재하는지 확인하고 존재한다면 Member 객체 생성
         Optional<Member> optionalMember = userRepository.findByusername(currentUsername);
         if (!optionalMember.isPresent()) {
             throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
         }
         Member member = optionalMember.get();
 
-        // 해당 id에 해당하는 게시글에 대해 추천 기능 실행
-        boardService.likeBoard(id, member);
+        ModelAndView mav = new ModelAndView();
 
-        return "redirect:/board/view/" + id;
+        boolean isLiked = boardService.likeBoard(id, member);
+        if (!isLiked) {
+            // 중복 추천 시 예외 처리
+            mav.addObject("message", "이미 추천한 게시물입니다.");
+            mav.setViewName("alert");
+            return mav;
+        }
+
+        mav.setViewName("redirect:/board/view/" + id);
+        return mav;
     }
-
 
 }

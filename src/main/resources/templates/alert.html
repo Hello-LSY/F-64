@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Alert</title>
+</head>
+<body>
+<script th:inline="javascript">
+    var message = /*[[${message}]]*/ 'default message';
+    alert(message);
+    location.replace(document.referrer);
+</script>
+</body>
+</html>

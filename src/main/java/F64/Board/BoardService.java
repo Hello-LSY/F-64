@@ -26,33 +26,54 @@ public class BoardService {
 
         CustomUser user = userSecurityService.getCurrentUser();
         String nickname = user.getNickname();
-        board.setWriter(nickname);
+        board.setWriter_Nickname(nickname);
+        board.setLikeCount(0);
+        board.setViewCount(0);
+        board.setWriter_Username(user.getUsername());
 
         boardRepository.save(board);
     }
 
     //게시글 보기
-    public Board getBoard(Long id){
+    public Board getBoardAndIncreaseViewCount(Long id){
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
         board.setViewCount(board.getViewCount()+1);
         return boardRepository.save(board);
     }
 
+    public List<Board> getLatestBoardList() {
+        return boardRepository.findTop5ByOrderByCreatedDateDesc();
+    }
+
+
     public List<Board> getBoardList() {
         return boardRepository.findAll();
     }
 
-    public void likeBoard(Long boardId, Member member) {
+    public Board getBoardById(Long id){
+        return boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. "));
+    }
+
+    public void updateBoard(Long id, Board updateBoard){
+        Board board = boardRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
+        board.setTitle(updateBoard.getTitle());
+        board.setContent(updateBoard.getContent());
+
+        boardRepository.save(board);
+    }
+
+    public boolean likeBoard(Long boardId, Member member) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board id: " + boardId));
 
-        // 중복 추천을 막기 위해 한 회원이 한 게시글에 대해 여러 번 추천하지 못하게 함
         if (boardLikeRepository.findByBoardAndMember(board, member).isPresent()) {
-            throw new IllegalStateException("이미 추천한 게시물입니다.");
+            // 중복 추천일 경우 false 반환
+            return false;
         }
 
-        // BoardLike 엔티티 생성 및 저장
         BoardLike boardLike = new BoardLike();
         boardLike.setBoard(board);
         boardLike.setMember(member);
@@ -61,6 +82,11 @@ public class BoardService {
         // 해당 게시글(Board)에 대한 추천 수 증가
         board.setLikeCount(board.getLikeCount() + 1);
         boardRepository.save(board);
+
+        // 정상 처리일 경우 true 반환
+        return true;
     }
+
+
 
 }
