@@ -12,19 +12,18 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
 
 
 
-    @GetMapping("/signup")
+    @GetMapping("/user/signup")
     public String loginForm(UserCreateForm userCreateForm) {
         return "signupForm";
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/user/signup")
     public String login(@Valid UserCreateForm userCreateForm, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "signupForm";
@@ -48,7 +47,7 @@ public class UserController {
         return "redirect:/";
     }
 
-    @GetMapping("/login")
+    @GetMapping("/user/login")
     public String login() {
         return "loginForm";
     }

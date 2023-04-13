@@ -36,8 +36,6 @@ public class HomeController {
         String nickname = user != null ? user.getNickname() : "non-login status";
         model.addAttribute("nickname", nickname);
 
-        List<Board> latestBoardList = boardService.getLatestBoardList();
-        model.addAttribute("BoardList", latestBoardList);
         return "homepage";
     }
 

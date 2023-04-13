@@ -1,5 +1,6 @@
-package F64.Board;
+package F64.Board.Like;
 
+import F64.Board.Board;
 import F64.User.Member;
 import lombok.Data;
 

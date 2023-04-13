@@ -1,4 +1,4 @@
-package F64.Board;
+package F64.Board.Deleted;
 
 import lombok.Data;
 
@@ -7,11 +7,12 @@ import java.time.LocalDate;
 
 @Entity
 @Data
-public class Board {
+public class DeletedBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long BoardId;
     private String title;
     private String content;
     private String writerNickname;

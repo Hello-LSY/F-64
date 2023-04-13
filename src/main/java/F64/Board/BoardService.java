@@ -1,5 +1,7 @@
 package F64.Board;
 
+import F64.Board.Like.BoardLike;
+import F64.Board.Like.BoardLikeRepository;
 import F64.User.Member;
 import F64.User.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,24 +14,22 @@ import java.util.List;
 public class BoardService {
     @Autowired
     private BoardRepository boardRepository;
-
     @Autowired
     private BoardLikeRepository boardLikeRepository;
-
     @Autowired
     private UserSecurityService userSecurityService;
 
 
     //게시글 쓰기
-    public void write(Board board) {
+    public void writeBoard(Board board) {
         board.setCreatedDate(LocalDate.now());
 
         CustomUser user = userSecurityService.getCurrentUser();
         String nickname = user.getNickname();
-        board.setWriter_Nickname(nickname);
+        board.setWriterNickname(nickname);
         board.setLikeCount(0);
         board.setViewCount(0);
-        board.setWriter_Username(user.getUsername());
+        board.setWriterUsername(user.getUsername());
 
         boardRepository.save(board);
     }
@@ -42,10 +42,11 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    public List<Board> getLatestBoardList() {
-        return boardRepository.findTop5ByOrderByCreatedDateDesc();
-    }
+    public void deleteBoard(Long id){
+        Board board = boardRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
 
+    }
 
     public List<Board> getBoardList() {
         return boardRepository.findAll();

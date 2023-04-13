@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<<html xmlns:th="http://www.thymeleaf.org"
-       xmlns:c="http://www.thymeleaf.org/extras/spring-security"
+<html xmlns:th="http://www.thymeleaf.org"
        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
     <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
     <style>
-         .navbar-nav.ml-auto .nav-item:nth-child(1) {
-          margin-right: 10px;
-          font-size: 1.2rem;
-          }
+
     </style>
 
 </head>
@@ -36,7 +32,7 @@
                 <a class="nav-link" href="/user/login">로그인</a>
             </li>
             <li class="nav-item" sec:authorize="!isAuthenticated()">
-                <a class="nav-link" href="user/signup">회원가입</a>
+                <a class="nav-link" href="/user/signup">회원가입</a>
             </li>
         </ul>
         <ul class="navbar-nav">
@@ -44,7 +40,7 @@
                 <a class="nav-link" href="/">홈</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="board/list">자유 게시판</a>
+                <a class="nav-link" href="/board/list">자유 게시판</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">출사지 신청</a>
@@ -55,35 +51,7 @@
         </ul>
     </div>
 </nav>
-<div class="container mt-3">
-    <div class="row">
-        <div class="col-md-8">
-            <h2>자유게시판</h2>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th scope="col">제목</th>
-                    <th scope="col">작성자</th>
-                    <th scope="col">작성일</th>
-                    <th scope="col">조회수</th>
-                    <th scope="col">추천수</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="board : ${boardList}">
-                    <td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
-                    <td th:text="${board.writer_Nickname}"></td>
-                    <td th:text="${board.createdDate}"></td>
-                    <td th:text="${board.viewCount}"></td>
-                    <td th:text="${board.likeCount}"></td>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-4">
-            <!-- 여기에 광고나 기타 내용을 보여주는 코드를 작성해주세요 -->
-        </div>
-    </div>
-</div>
+
 
 
 

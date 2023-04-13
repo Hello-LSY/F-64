@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/board")
 public class BoardController {
 
     @Autowired
@@ -26,27 +25,27 @@ public class BoardController {
     @Autowired
     private BoardRepository boardRepository;
 
-    @GetMapping("/list")
+    @GetMapping("/board/list")
     public String BoardForm(Model model){
         List<Board> boardList = boardService.getBoardList();
         model.addAttribute("boardList", boardList);
         return "listForm";
     }
 
-    @GetMapping("/write")
+    @GetMapping("/board/write")
     public String BoardWrite(Model model){
         model.addAttribute("board", new Board());
         return "writeForm";
     }
 
-    @PostMapping("/writePro")
+    @PostMapping("/board/writePro")
     public String BoardWritePro(Board board) {
 
-        boardService.write(board);
+        boardService.writeBoard(board);
         return "redirect:/board/list";
     }
 
-    @GetMapping("update/{id}")
+    @GetMapping("/board/update/{id}")
     public String BoardUpdate(@PathVariable Long id, Model model){
         //id에 해당하는 게시물 가져오기
         Board board = boardService.getBoardById(id);
@@ -55,13 +54,13 @@ public class BoardController {
         return "updateForm";
     }
 
-    @PostMapping("updatePro/{id}")
+    @PostMapping("/board/updatePro/{id}")
     public String BoardUpdatePro(@PathVariable Long id,  @ModelAttribute Board board){
         boardService.updateBoard(id, board);
         return "redirect:/board/list";
     }
 
-    @GetMapping("view/{id}")
+    @GetMapping("/board/view/{id}")
     public String BoardView(@PathVariable Long id, Model model, Authentication authentication){
         Board board = boardService.getBoardAndIncreaseViewCount(id);
         model.addAttribute("board", board);
@@ -69,7 +68,7 @@ public class BoardController {
         boolean isWriter = false;
         if(authentication != null){
             String username = authentication.getName();
-            if(username.equals(board.getWriter_Username())){
+            if(username.equals(board.getWriterUsername())){
                 isWriter = true;
             }
         }
@@ -79,7 +78,7 @@ public class BoardController {
     }
 
 
-    @PostMapping("/like/{id}")
+    @PostMapping("/board/like/{id}")
     public ModelAndView likeBoard(@PathVariable("id") Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
