@@ -77,7 +77,7 @@
         <tr th:each="board : ${boardList}">
             <td th:text="${board.id}"></td>
             <td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
-            <td th:text="${board.writer_Nickname}"></td>
+            <td th:text="${board.WriterNickname}"></td>
             <td th:text="${board.createdDate}"></td>
             <td th:text="${board.viewCount}"></td>
             <td th:text="${board.likeCount}"></td>

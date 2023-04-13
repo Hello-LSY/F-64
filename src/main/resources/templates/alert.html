@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Alert</title>
+    <script th:if="${redirectPath}" th:src="@{/js/redirect.js}"></script>
 </head>
 <body>
 <script th:inline="javascript">
     var message = /*[[${message}]]*/ 'default message';
     alert(message);
     location.replace(document.referrer);
+
+    var redirectPath = /*[[${redirectPath}]]*/ null;
+        if (redirectPath) {
+    location.replace(redirectPath);
+}
 </script>
 </body>
 </html>

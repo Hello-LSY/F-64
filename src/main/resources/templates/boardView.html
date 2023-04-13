@@ -7,7 +7,7 @@
   <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
   <title>게시글 상세보기</title>
   <style>
-    </style>
+  </style>
 </head>
 <body>
 
@@ -96,7 +96,7 @@
   <tr>
     <td colspan="2" class="info">
       <span>작성자:</span>
-      <span th:text="${board.writer_Nickname}"></span>
+      <span th:text="${board.writerNickname}"></span>
       <span>작성일자:</span>
       <span th:text="${board.createdDate}"></span>
       <span>조회수:</span>
@@ -110,7 +110,7 @@
   </tr>
   <tr>
     <td colspan="2" class="btn-group">
-      <form id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
+      <form th:if="${isWriter}" id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
         <button type="submit" class="btn btn-success">추천</button>
       </form>
       <form id="back" method="get" th:action="@{/board/list}">
@@ -118,6 +118,9 @@
       </form>
       <form th:if="${isWriter}" id="update" method="get" th:action="@{/board/update/{id}(id=${board.id})}">
         <button type="submit" class="btn btn-warning">글 수정</button>
+      </form>
+      <form th:if="${isWriter}" id="delete" method="get" th:action="@{/board/delete/{id}(id=${board.id})}" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
+        <button type="submit" class="btn btn-primary">글 삭제</button>
       </form>
     </td>
   </tr>

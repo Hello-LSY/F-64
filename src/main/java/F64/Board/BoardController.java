@@ -60,6 +60,17 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
+    @GetMapping("/board/delete/{id}")
+    public ModelAndView BoardDelete(@PathVariable Long id)
+    {
+        boardService.deleteBoard(id);
+       ModelAndView mav = new ModelAndView();
+       mav.addObject("message","삭제되었습니다.");
+       mav.setViewName("alert");
+        mav.addObject("redirectPath", "/board/list");
+       return mav;
+    }
+
     @GetMapping("/board/view/{id}")
     public String BoardView(@PathVariable Long id, Model model, Authentication authentication){
         Board board = boardService.getBoardAndIncreaseViewCount(id);

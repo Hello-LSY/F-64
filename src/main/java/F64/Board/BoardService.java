@@ -1,5 +1,7 @@
 package F64.Board;
 
+import F64.Board.Deleted.DeletedBoard;
+import F64.Board.Deleted.DeletedBoardRepository;
 import F64.Board.Like.BoardLike;
 import F64.Board.Like.BoardLikeRepository;
 import F64.User.Member;
@@ -18,6 +20,9 @@ public class BoardService {
     private BoardLikeRepository boardLikeRepository;
     @Autowired
     private UserSecurityService userSecurityService;
+
+    @Autowired
+    private DeletedBoardRepository deletedBoardRepository;
 
 
     //게시글 쓰기
@@ -45,7 +50,19 @@ public class BoardService {
     public void deleteBoard(Long id){
         Board board = boardRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
+        DeletedBoard deletedBoard = new DeletedBoard();
+        deletedBoard.setBoardId(board.getId());
+        deletedBoard.setContent(board.getContent());
+        deletedBoard.setTitle(board.getTitle());
+        deletedBoard.setWriterNickname(board.getWriterNickname());
+        deletedBoard.setWriterUsername(board.getWriterUsername());
+        deletedBoard.setCreatedDate(board.getCreatedDate());
+        deletedBoard.setLikeCount(board.getLikeCount());
+        deletedBoard.setViewCount(board.getViewCount());
+        deletedBoardRepository.save(deletedBoard);
 
+        boardLikeRepository.deleteByBoardId(id);
+        boardRepository.deleteById(id);
     }
 
     public List<Board> getBoardList() {
