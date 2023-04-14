@@ -1,17 +1,26 @@
 package F64.Board;
 
+import F64.Board.Comment.Comment;
+import F64.Board.Comment.CommentRepository;
 import F64.Board.Deleted.DeletedBoard;
 import F64.Board.Deleted.DeletedBoardRepository;
 import F64.Board.Like.BoardLike;
 import F64.Board.Like.BoardLikeRepository;
 import F64.User.Member;
+import F64.User.UserRepository;
 import F64.User.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import F64.User.CustomUser;
-import java.time.LocalDate;
-import java.util.List;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+@Transactional
 @Service
 public class BoardService {
     @Autowired
@@ -20,10 +29,12 @@ public class BoardService {
     private BoardLikeRepository boardLikeRepository;
     @Autowired
     private UserSecurityService userSecurityService;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private DeletedBoardRepository deletedBoardRepository;
-
+    @Autowired
+    private CommentRepository commentRepository;
 
     //게시글 쓰기
     public void writeBoard(Board board) {
@@ -47,11 +58,11 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    public void deleteBoard(Long id){
-        Board board = boardRepository.findById(id)
+    public void deleteBoard(Long boardId){
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
         DeletedBoard deletedBoard = new DeletedBoard();
-        deletedBoard.setBoardId(board.getId());
+        deletedBoard.setBoard(board);
         deletedBoard.setContent(board.getContent());
         deletedBoard.setTitle(board.getTitle());
         deletedBoard.setWriterNickname(board.getWriterNickname());
@@ -61,8 +72,10 @@ public class BoardService {
         deletedBoard.setViewCount(board.getViewCount());
         deletedBoardRepository.save(deletedBoard);
 
-        boardLikeRepository.deleteByBoardId(id);
-        boardRepository.deleteById(id);
+        //댓글도 삭제 추가
+        commentRepository.deleteByBoardId(boardId);
+        boardLikeRepository.deleteByBoardId(boardId);
+        boardRepository.deleteById(boardId);
     }
 
     public List<Board> getBoardList() {
@@ -105,6 +118,49 @@ public class BoardService {
         return true;
     }
 
+    public void saveComment(Long memberId, Long boardId, String content){
+        Member member = userRepository.findById(memberId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 맴버가 없습니다."));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
 
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setBoard(board);
+        comment.setMember(member);
+        comment.setCreatedDate(LocalDateTime.now());
+        comment.setWriterNickname(member.getNickname());
 
+        commentRepository.save(comment);
+    }
+
+    public List<Comment> getCommentList(Long boardId) {
+        //boardId로 찾은거 optionalBoard에 저장
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        if (optionalBoard.isPresent()) {
+            //있으면 board에 get함
+            Board board = optionalBoard.get();
+            return commentRepository.findByBoardOrderByCreatedDateDesc(board);
+        }
+        return Collections.emptyList();
+    }
+
+    public Comment getComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 댓글이 없습니다."));
+    }
+
+    public void updateComment(Long boardId, Long commentId)
+    {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 댓글이 없습니다."));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
+    }
+
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 댓글이 없습니다."));
+        commentRepository.deleteById(commentId);
+    }
 }

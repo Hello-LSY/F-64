@@ -57,7 +57,7 @@ public class UserSecurityService implements UserDetailsService {
         }
 
         //User 객체를 상속받는 CustomUser 객체 생성
-        CustomUser customUser = new CustomUser(member.getUsername(), member.getPassword(), authorities, member.getNickname());
+        CustomUser customUser = new CustomUser(member.getId(), member.getUsername(), member.getPassword(), authorities, member.getNickname());
 
         return customUser;
         }

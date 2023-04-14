@@ -7,7 +7,32 @@
   <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
   <title>게시글 상세보기</title>
   <style>
-  </style>
+
+    .btn-group {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 20px;
+        gap: 10px;
+    }
+    .btn {
+        margin-right: 1px;
+    }
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+        padding-bottom: 10px;
+    }
+    .content {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+    .info {
+        font-size: 14px;
+    }
+    .info span {
+        margin-right: 10px;
+    }
+</style>
 </head>
 <body>
 
@@ -52,42 +77,6 @@
   </div>
 </nav>
 
-<script>
-</script>
-
-<style>
-    table {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    .btn-group {
-        display: flex;
-        justify-content: flex-start;
-        margin-top: 20px;
-        gap: 10px;
-    }
-    .btn {
-        margin-right: 1px;
-    }
-    .title {
-        font-size: 24px;
-        font-weight: bold;
-        padding-bottom: 10px;
-    }
-    .content {
-        font-size: 16px;
-        line-height: 1.5;
-    }
-    .info {
-        font-size: 14px;
-    }
-    .info span {
-        margin-right: 10px;
-    }
-</style>
-
-
-
 <table class="table">
   <tbody>
   <tr>
@@ -117,15 +106,68 @@
         <button type="submit" class="btn btn-primary">글 목록</button>
       </form>
       <form th:if="${isWriter}" id="update" method="get" th:action="@{/board/update/{id}(id=${board.id})}">
-        <button type="submit" class="btn btn-warning">글 수정</button>
+        <button type="submit" class="btn btn-primary">글 수정</button>
       </form>
-      <form th:if="${isWriter}" id="delete" method="get" th:action="@{/board/delete/{id}(id=${board.id})}" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
+      <form th:if="${isWriter}" id="delete" method="post" th:action="@{/board/delete/{id}(id=${board.id})}" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
         <button type="submit" class="btn btn-primary">글 삭제</button>
       </form>
     </td>
   </tr>
   </tbody>
 </table>
+
+<div th:if="${commentList}" class="card mt-5">
+  <div class="card-header">
+    <h5 class="card-title">댓글 목록</h5>
+  </div>
+  <div class="card-body table-responsive">
+    <table class="table table-striped">
+      <thead class="thead-dark">
+      <tr>
+        <th>내용</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="comment : ${commentList}">
+        <td>
+          <div>
+            <span th:text="${comment.writerNickname}"></span>
+            <small th:text="${comment.createdDate}"></small>
+          </div>
+          <div th:text="${comment.content}"></div>
+        </td>
+        <td>
+          <form th:if="${isWriter}" th:action="@{/board/view/{boardId}/comment/delete/{commentId}(boardId=${board.id}, commentId=${comment.id})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
+            <button type="submit" class="btn btn-danger delete-comment-btn">삭제</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<div class="card mt-5">
+  <div class="card-header">
+    <h5 class="card-title">댓글 작성</h5>
+  </div>
+  <div class="card-body">
+    <form method="post" th:action="@{/board/comment/{id}(id=${board.id})}">
+      <div class="form-group">
+        <textarea class="form-control" rows="2" name="content"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">작성하기</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+
 
 </body>
 </html>

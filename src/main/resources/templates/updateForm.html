@@ -5,7 +5,12 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
   <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
-  <title>글수정</title>
+  <style>
+        .custom-textarea {
+        height: 400px;
+    }
+    </style>
+  <title></title>
 </head>
 <body>
 
@@ -66,7 +71,7 @@
         <div class="col-md-12">
           <div class="form-group">
             <label for="content">내용</label>
-            <textarea class="form-control" id="content" name="content" required="required" th:text="*{content}"></textarea>
+            <textarea class="form-control custom-textarea" id="content" name="content" required="required" th:text="*{content}"></textarea>
           </div>
         </div>
       </div>
