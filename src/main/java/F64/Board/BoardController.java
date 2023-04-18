@@ -74,8 +74,22 @@ public class BoardController {
             }
         }
         model.addAttribute("isWriter",isWriter);
+
         List<Comment> commentList = boardService.getCommentList(id);
         model.addAttribute("commentList", commentList);
+
+        boolean isCommentWriter = false;
+        for (Comment comment : commentList) {
+            if (authentication != null) {
+                String username = authentication.getName();
+                if (username.equals(comment.getWriterUsername())) {
+                    isCommentWriter = true;
+                }
+            }
+        }
+        model.addAttribute("isCommentWriter", isCommentWriter);
+
+
         return "boardView";
     }
 

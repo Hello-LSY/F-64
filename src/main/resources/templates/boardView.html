@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
   <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+  <script src="static/jquery-3.6.4.js"></script>
   <title>게시글 상세보기</title>
   <style>
 
@@ -99,7 +99,7 @@
   </tr>
   <tr>
     <td colspan="2" class="btn-group">
-      <form th:if="${isWriter}" id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
+      <form sec:authorize="isAuthenticated()" id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
         <button type="submit" class="btn btn-success">추천</button>
       </form>
       <form id="back" method="get" th:action="@{/board/list}">
@@ -138,7 +138,7 @@
           <div th:text="${comment.content}"></div>
         </td>
         <td>
-          <form th:if="${isWriter}" th:action="@{/board/view/{boardId}/comment/delete/{commentId}(boardId=${board.id}, commentId=${comment.id})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
+          <form th:if="${isCommentWriter}" th:action="@{/board/view/{boardId}/comment/delete/{commentId}(boardId=${board.id}, commentId=${comment.id})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
             <button type="submit" class="btn btn-danger delete-comment-btn">삭제</button>
           </form>
         </td>

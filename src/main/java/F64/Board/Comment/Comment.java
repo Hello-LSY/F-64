@@ -28,4 +28,5 @@ public class Comment {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdDate;
     private String writerNickname;
+    private String writerUsername;
 }

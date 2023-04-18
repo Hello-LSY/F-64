@@ -130,6 +130,7 @@ public class BoardService {
         comment.setMember(member);
         comment.setCreatedDate(LocalDateTime.now());
         comment.setWriterNickname(member.getNickname());
+        comment.setWriterUsername(member.getUsername());
 
         commentRepository.save(comment);
     }
