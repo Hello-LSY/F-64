@@ -16,13 +16,14 @@
                     type: "GET",
                     url: "/calendar/event/all",
                     success: function (response) {
-                        // 이전 이벤트들을 FullCalendar에 추가
+                        // db에 있던 이전 이벤트들을 FullCalendar에 추가
                         var events = response.map(function(event) {
                             return {
                                 id: event.id,
                                 title: event.title,
                                 start: event.startDate,
                                 end: event.endDate
+
                             };
                         });
                         calendar.addEventSource(events);
@@ -56,10 +57,10 @@
                             data: {
                                 title: title,
                                 startDate: moment(arg.start).format('YYYY-MM-DDTHH:mm:ss'),
-                                endDate: moment(arg.end).format('YYYY-MM-DDTHH:mm:ss')
+                                endDate: moment(arg.end).format('YYYY-MM-DDTHH:mm:ss'),
+                                allDay: arg.allDay // allDay 값도 전송
                             },
                             success: function (response) {
-                                // 서버에서 ID를 생성하여 반환하는 경우
                                 calendar.addEvent({
                                     id: response.id,
                                     title: title,

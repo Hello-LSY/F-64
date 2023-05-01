@@ -25,17 +25,17 @@ public class CalendarController {
     }
 
     @PostMapping("/calendar/event/add")
-    public @ResponseBody Event addEvent(@RequestParam String title, @RequestParam String startDate, @RequestParam String endDate) {
+    public @ResponseBody Event addEvent(@RequestParam String title, @RequestParam String startDate, @RequestParam String endDate, @RequestParam(defaultValue = "false") boolean allDay) {
         LocalDateTime startDateTime = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         LocalDateTime endDateTime = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-        Event event = calendarService.addEvent(title, startDateTime, endDateTime);
+        Event event = calendarService.addEvent(title, startDateTime, endDateTime, allDay);
         return event;
     }
 
+
     @GetMapping("/calendar")
-    public String CalendarForm(Model model){
-        List<Event> eventList = calendarService.getAllEvent();
-        model.addAttribute("eventList", eventList);
+    public String CalendarForm(){
+
         return "f64Calendar";
     }
 

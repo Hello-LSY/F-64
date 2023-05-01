@@ -20,11 +20,12 @@ public class CalendarService {
         return calendarRepository.findAll();
     }
 
-    public Event addEvent(String title, LocalDateTime startDate, LocalDateTime endDate) {
+    public Event addEvent(String title, LocalDateTime startDate, LocalDateTime endDate, boolean allDay) {
         Event event = new Event();
         event.setTitle(title);
         event.setStartDate(startDate);
         event.setEndDate(endDate);
+        event.setAllDay(allDay);
         return calendarRepository.save(event);
     }
 

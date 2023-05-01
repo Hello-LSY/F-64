@@ -19,4 +19,5 @@ public class Event {
 
     private LocalDateTime endDate;
 
+    private boolean allDay;
 }

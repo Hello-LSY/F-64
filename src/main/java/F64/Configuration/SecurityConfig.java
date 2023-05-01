@@ -22,8 +22,9 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeHttpRequests().requestMatchers(
-                        new AntPathRequestMatcher("/**")).permitAll()
+                .authorizeRequests()
+                .antMatchers("/calendar/event/add", "/calendar/event/delete/**").hasRole("ADMIN")
+                .anyRequest().permitAll()
                 .and()
                     .headers()
                     .addHeaderWriter(new XFrameOptionsHeaderWriter(

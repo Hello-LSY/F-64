@@ -21,26 +21,7 @@ public class UserSecurityService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-//        Optional<Member> _member = this.userRepository.findByusername(username);
-//        if(_member.isEmpty()){
-//            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
-//        }
-//        //회원정보
-//        Member member = _member.get();
-//        //권한정보
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//
-//        //사용자권한처리
-//        if("admin".equals(username)){
-//            authorities.add(new SimpleGrantedAuthority(UserRole.ADMIN.getValue()));
-//        } else {
-//            authorities.add(new SimpleGrantedAuthority(UserRole.USER.getValue()));
-//        }
-//
-//        return new User(member.getUsername(), member.getPassword(), authorities);
-//    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Member> _member = this.userRepository.findByusername(username);
