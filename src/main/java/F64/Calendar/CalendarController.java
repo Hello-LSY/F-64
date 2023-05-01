@@ -26,9 +26,10 @@ public class CalendarController {
 
     @PostMapping("/calendar/event/add")
     public @ResponseBody Event addEvent(@RequestParam String title, @RequestParam String startDate, @RequestParam String endDate) {
-        LocalDateTime startDateTime = LocalDateTime.parse(startDate, DateTimeFormatter.ISO_DATE_TIME);
-        LocalDateTime endDateTime = LocalDateTime.parse(endDate, DateTimeFormatter.ISO_DATE_TIME);
-        return calendarService.addEvent(title, startDateTime, endDateTime);
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        Event event = calendarService.addEvent(title, startDateTime, endDateTime);
+        return event;
     }
 
     @GetMapping("/calendar")

@@ -11,83 +11,96 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         document.addEventListener('DOMContentLoaded', function() {
-            // 이전에 추가한 이벤트를 불러오는 코드
-            $.ajax({
-                type: "GET",
-                url: "/calendar/event/all",
-                success: function (response) {
-                    // FullCalendar 초기화 코드
-                    var calendarEl = document.getElementById('calendar');
-                    var today = new Date().toISOString().slice(0, 10);
-                    var calendar = new FullCalendar.Calendar(calendarEl, {
-                        headerToolbar: {
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                        },
-                        initialDate: today,
-                        navLinks: true,
-                        selectable: true,
-                        selectMirror: true,
-                        select: function(arg) {
-                            var title = prompt('행사 이름을 입력하세요.');
-                            if (title) {
-                                $.ajax({
-                                    type: "POST",
-                                    url: "/calendar/event/add",
-                                    data: {
-                                        title: title,
-                                        startDate: moment(arg.start).format('YYYY-MM-DDTHH:mm:ss'),
-                                        endDate: moment(arg.end).format('YYYY-MM-DDTHH:mm:ss')
-                                    },
-                                    success: function (response) {
-                                        // 서버에서 ID를 생성하여 반환하는 경우
-                                        calendar.addEvent({
-                                            id: response,
-                                            title: title,
-                                            start: arg.start,
-                                            end: arg.end,
-                                            allDay: arg.allDay
-                                        });
-                                    },
-                                    error: function (xhr, status, error) {
-                                        alert("Error: " + error);
-                                    }
-                                })
-                            }
-                            calendar.unselect()
-                        },
-                        eventClick: function(arg) {
-                            if (confirm('삭제하시겠습니까?')) {
-                                $.ajax({
-                                    type: "DELETE",
-                                    url: "/calendar/event/delete/" + arg.event.id,
-                                    data: { id: arg.event.id },
-                                    success: function () {
-                                        var event = calendar.getEventById(arg.event.id);
-                                        if (event) {
-                                            event.remove();
-                                        }
-                                    },
-                                    error: function (xhr, status, error) {
-                                        alert("Error: " + error);
-                                    }
-                                })
-                            }
-                        },
-                        editable: true,
-                        dayMaxEvents: true,
-                        events: response // 이전에 불러온 이벤트 데이터를 전달
-                    });
-                    calendar.render();
+            function loadEvents() {
+                $.ajax({
+                    type: "GET",
+                    url: "/calendar/event/all",
+                    success: function (response) {
+                        // 이전 이벤트들을 FullCalendar에 추가
+                        var events = response.map(function(event) {
+                            return {
+                                id: event.id,
+                                title: event.title,
+                                start: event.startDate,
+                                end: event.endDate
+                            };
+                        });
+                        calendar.addEventSource(events);
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error: " + error);
+                    }
+                });
+            }
+
+
+            // FullCalendar 초기화 코드
+            var calendarEl = document.getElementById('calendar');
+            var today = new Date().toISOString().slice(0, 10);
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                error: function (xhr, status, error) {
-                    alert("Error: " + error);
-                }
+                initialDate: today,
+                navLinks: true,
+                selectable: true,
+                selectMirror: true,
+                select: function(arg) {
+                    var title = prompt('행사 이름을 입력하세요.');
+                    if (title) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/calendar/event/add",
+                            data: {
+                                title: title,
+                                startDate: moment(arg.start).format('YYYY-MM-DDTHH:mm:ss'),
+                                endDate: moment(arg.end).format('YYYY-MM-DDTHH:mm:ss')
+                            },
+                            success: function (response) {
+                                // 서버에서 ID를 생성하여 반환하는 경우
+                                calendar.addEvent({
+                                    id: response.id,
+                                    title: title,
+                                    start: arg.start,
+                                    end: arg.end,
+                                    allDay: arg.allDay
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error: " + error);
+                            }
+                        })
+                    }
+                    calendar.unselect()
+                },
+                eventClick: function(arg) {
+                    if (confirm('삭제하시겠습니까?')) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: "/calendar/event/delete/" + arg.event.id,
+                            data: { id: arg.event.id },
+                            success: function () {
+                                var event = calendar.getEventById(arg.event.id);
+                                if (event) {
+                                    event.remove();
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error: " + error);
+                            }
+                        })
+                    }
+                },
+                editable: true,
+                dayMaxEvents: true
             });
+            calendar.render();
+            loadEvents();
         });
         /*]]>*/
-</script>
+    </script>
 
 
     <style>
