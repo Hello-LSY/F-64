@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<head>
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"><head>
   <meta charset="UTF-8">
+  <title>출사지 상세 보기</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
-
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/jquery-3.6.4.js"></script>
-
-  <title>회원가입</title>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=dcc14e4ed8875f5829fe1274e43cee7b&libraries=clusterer,services,drawing"></script>
 </head>
 <body>
 
@@ -59,38 +57,50 @@
   </div>
 </nav>
 
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <div id="map" style="height: 400px; width: 100%;"></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">[[${photoSpot.title}]]</h2>
+          <hr>
+          <p class="card-text"><strong>닉네임:</strong> [[${photoSpot.userNickname}]]</p>
+          <p class="card-text"><strong>출사일:</strong> [[${photoSpot.date}]]</p>
 
-<h1>회원가입</h1>
-
-<form th:action="@{/user/signup}" th:object="${userCreateForm}" method="post">
-  <div class="form-group">
-    <label for="username">사용자 ID</label>
-    <input type="text" id="username" th:field="*{username}" class="form-control" style="width: 50%;">
-    <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="invalid-feedback"></div>
+          <hr>
+          <p class="card-text"><strong>출사지 설명:</strong></p>
+          <p class="card-text">[[${photoSpot.description}]]</p>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
-  <div class="form-group">
-    <label for="password">비밀번호</label>
-    <input type="password" id="password" th:field="*{password}" class="form-control" style="width: 50%;">
-    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="invalid-feedback"></div>
-  </div>
-
-  <div class="form-group">
-    <label for="confirm_password">비밀번호 확인</label>
-    <input type="password" id="confirm_password" th:field="*{confirm_password}" class="form-control" style="width: 50%;">
-    <div th:if="${#fields.hasErrors('confirm_password')}" th:errors="*{confirm_password}" class="invalid-feedback"></div>
-  </div>
-
-  <div class="form-group">
-    <label for="nickname">닉네임</label>
-    <input type="text" id="nickname" th:field="*{nickname}" class="form-control" style="width: 50%;">
-    <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="invalid-feedback"></div>
-  </div>
-
-  <button type="submit" class="btn btn-primary">회원가입</button>
-</form>
+<script th:inline="javascript">
+  function initMap() {
+    var container = document.getElementById('map');
+    var options = {
+      center: new kakao.maps.LatLng(/*[[${photoSpot.latitude_1}]]*/, /*[[${photoSpot.longitude_1}]]*/),
+      level: 7
+    };
+    var map = new kakao.maps.Map(container, options);
+    /*[# th:each="i : ${#numbers.sequence(1,5)}"]*/
+    var markerPosition = new kakao.maps.LatLng(/*[[${photoSpot['latitude_' + i]}]]*/, /*[[${photoSpot['longitude_' + i]}]]*/);
+    var marker = new kakao.maps.Marker({
+      position: markerPosition,
+      map: map
+    });
+    marker.setMap(map);
+    /*[/]*/
+  }
+  window.onload = function() {
+    initMap();
+  };
+</script>
 
 
 </body>
-
 </html>

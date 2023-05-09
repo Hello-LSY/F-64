@@ -3,14 +3,10 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
+    <title>출사지 신청 내역</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/jquery-3.6.4.js"></script>
-
-    <style>
-
-    </style>
-
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -62,6 +58,24 @@
 
 
 
-
+<h1 style="font-weight: bold">출사 신청 목록</h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>출사일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="photoSpot : ${photoSpotList}">
+            <td> <a th:href="@{/photospot/{id}(id=${photoSpot.id})}"th:text="${photoSpot.title}"></a></td>
+            <td th:text="${photoSpot.userNickname}"></td>
+            <td th:text="${photoSpot.date}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

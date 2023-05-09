@@ -44,6 +44,7 @@ public class UserSecurityService implements UserDetailsService {
         return customUser;
         }
 
+        //인증된 사용자 정보 가져오기
     public CustomUser getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
