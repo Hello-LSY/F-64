@@ -2,10 +2,7 @@ package F64.Inquiry;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,5 +17,9 @@ public class Inquiry {
     private String nickname;
     private LocalDateTime createdDate;
 
+    @Column(nullable = false)
+    private boolean anonymous;
+    private boolean secret;
 
+    private String answer;
 }

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"><head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
   <meta charset="UTF-8">
-  <title>출사지 상세 보기</title>
+  <title>Inquiry Details</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/jquery-3.6.4.js"></script>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=dcc14e4ed8875f5829fe1274e43cee7b&libraries=clusterer,services,drawing"></script>
 </head>
 <body>
 
@@ -54,50 +53,37 @@
   </div>
 </nav>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <div id="map" style="height: 400px; width: 100%;"></div>
-    </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="card-title">[[${photoSpot.title}]]</h2>
-          <hr>
-          <p class="card-text"><strong>닉네임:</strong> [[${photoSpot.userNickname}]]</p>
-          <p class="card-text"><strong>출사일:</strong> [[${photoSpot.date}]]</p>
-
-          <hr>
-          <p class="card-text"><strong>출사지 설명:</strong></p>
-          <p class="card-text">[[${photoSpot.description}]]</p>
-        </div>
+<div class="container mt-4">
+  <h1 class="mb-4">문의 내용</h1>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title mb-3" th:text="${inquiry.title}"></h2>
+      <p class="card-text mb-3" th:text="${inquiry.content}"></p>
+      <p class="card-text mb-1">
+        <strong>닉네임:</strong>
+        <span th:text="${inquiry.anonymous} ? '익명' : ${inquiry.nickname}"></span>
+      </p>
+      <p class="card-text mb-1">
+        <strong>문의 날짜:</strong>
+        <span th:text="${#temporals.format(inquiry.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+      </p>
+      <div th:if="${inquiry.answer}">
+        <p class="card-text mb-1">
+          <strong>답변:</strong>
+          <span th:text="${inquiry.answer}"></span>
+        </p>
       </div>
+      <form th:action="@{/inquiry/answer/{id}(id=${inquiry.id})}" method="post">
+        <div class="form-group" >
+          <label for="answer">답변 작성:</label>
+          <textarea class="form-control" id="answer" name="answer" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">답변 등록</button>
+      </form>
     </div>
+    </div>
+  <a class="btn btn-secondary mt-3" href="/inquiry/list">목록으로 돌아가기</a>
   </div>
 </div>
-
-<script th:inline="javascript">
-  function initMap() {
-    var container = document.getElementById('map');
-    var options = {
-      center: new kakao.maps.LatLng(/*[[${photoSpot.latitude_1}]]*/, /*[[${photoSpot.longitude_1}]]*/),
-      level: 7
-    };
-    var map = new kakao.maps.Map(container, options);
-    /*[# th:each="i : ${#numbers.sequence(1,5)}"]*/
-    var markerPosition = new kakao.maps.LatLng(/*[[${photoSpot['latitude_' + i]}]]*/, /*[[${photoSpot['longitude_' + i]}]]*/);
-    var marker = new kakao.maps.Marker({
-      position: markerPosition,
-      map: map
-    });
-    marker.setMap(map);
-    /*[/]*/
-  }
-  window.onload = function() {
-    initMap();
-  };
-</script>
-
-
 </body>
 </html>

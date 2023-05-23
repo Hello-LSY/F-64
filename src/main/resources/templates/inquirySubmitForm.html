@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"><head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
   <meta charset="UTF-8">
-  <title>출사지 상세 보기</title>
+  <title>Inquiry Form</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/jquery-3.6.4.js"></script>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=dcc14e4ed8875f5829fe1274e43cee7b&libraries=clusterer,services,drawing"></script>
 </head>
 <body>
 
@@ -54,50 +53,27 @@
   </div>
 </nav>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <div id="map" style="height: 400px; width: 100%;"></div>
+<div class="container mt-4">
+  <h1>문의 폼</h1>
+  <form action="/inquiry/submitpro" method="post" class="mt-4">
+    <div class="mb-3">
+      <label for="title" class="form-label">제목</label>
+      <input type="text" id="title" name="title" class="form-control" required>
     </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="card-title">[[${photoSpot.title}]]</h2>
-          <hr>
-          <p class="card-text"><strong>닉네임:</strong> [[${photoSpot.userNickname}]]</p>
-          <p class="card-text"><strong>출사일:</strong> [[${photoSpot.date}]]</p>
-
-          <hr>
-          <p class="card-text"><strong>출사지 설명:</strong></p>
-          <p class="card-text">[[${photoSpot.description}]]</p>
-        </div>
-      </div>
+    <div class="mb-3">
+      <label for="content" class="form-label">내용</label>
+      <textarea id="content" name="content" class="form-control" required></textarea>
     </div>
-  </div>
+    <div class="mb-3 form-check">
+      <input type="checkbox" id="anonymous" name="anonymous" class="form-check-input">
+      <label for="anonymous" class="form-check-label">익명</label>
+    </div>
+    <div class="mb-3 form-check">
+      <input type="checkbox" id="secret" name="secret" class="form-check-input">
+      <label for="secret" class="form-check-label">비밀글</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 </div>
-
-<script th:inline="javascript">
-  function initMap() {
-    var container = document.getElementById('map');
-    var options = {
-      center: new kakao.maps.LatLng(/*[[${photoSpot.latitude_1}]]*/, /*[[${photoSpot.longitude_1}]]*/),
-      level: 7
-    };
-    var map = new kakao.maps.Map(container, options);
-    /*[# th:each="i : ${#numbers.sequence(1,5)}"]*/
-    var markerPosition = new kakao.maps.LatLng(/*[[${photoSpot['latitude_' + i]}]]*/, /*[[${photoSpot['longitude_' + i]}]]*/);
-    var marker = new kakao.maps.Marker({
-      position: markerPosition,
-      map: map
-    });
-    marker.setMap(map);
-    /*[/]*/
-  }
-  window.onload = function() {
-    initMap();
-  };
-</script>
-
-
 </body>
 </html>

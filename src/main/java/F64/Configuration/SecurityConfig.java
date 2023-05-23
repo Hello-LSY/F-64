@@ -23,8 +23,9 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/calendar/event/add", "/calendar/event/delete/**").hasRole("ADMIN")
-                .anyRequest().permitAll()
+                .antMatchers("/", "user/**").permitAll()
+                .antMatchers("/calendar/event/add", "/calendar/event/delete/**","/inquiry/answer/**").hasRole("ADMIN")
+
                 .and()
                     .headers()
                     .addHeaderWriter(new XFrameOptionsHeaderWriter(

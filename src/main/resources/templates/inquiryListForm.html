@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"><head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
   <meta charset="UTF-8">
-  <title>출사지 상세 보기</title>
+  <title>Inquiry List</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/jquery-3.6.4.js"></script>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=dcc14e4ed8875f5829fe1274e43cee7b&libraries=clusterer,services,drawing"></script>
 </head>
 <body>
 
@@ -54,49 +53,45 @@
   </div>
 </nav>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <div id="map" style="height: 400px; width: 100%;"></div>
-    </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="card-title">[[${photoSpot.title}]]</h2>
-          <hr>
-          <p class="card-text"><strong>닉네임:</strong> [[${photoSpot.userNickname}]]</p>
-          <p class="card-text"><strong>출사일:</strong> [[${photoSpot.date}]]</p>
+<div class="container mt-4">
+  <h1>문의 목록</h1>
 
-          <hr>
-          <p class="card-text"><strong>출사지 설명:</strong></p>
-          <p class="card-text">[[${photoSpot.description}]]</p>
-        </div>
-      </div>
-    </div>
+  <table class="table table-striped mt-4">
+    <thead>
+    <tr>
+      <th>제목</th>
+      <th>닉네임</th>
+      <th>문의 날짜</th>
+      <th>문의 상태</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="inquiry : ${inquiries}">
+      <td>
+        <a th:if="${inquiry.secret && (inquiry.nickname == nickname || nickname == 'admin')}"
+           th:text="${inquiry.title}" th:href="@{/inquiry/details/{id}(id=${inquiry.id})}"></a>
+        <a th:if="${!inquiry.secret}"
+           th:text="${inquiry.title}" th:href="@{/inquiry/details/{id}(id=${inquiry.id})}"></a>
+        <a th:if="${inquiry.secret && (inquiry.nickname != nickname && nickname != 'admin')}"
+           th:text="비밀글" href="" onclick="alert('비밀글입니다.');">비밀글</a>
+      </td>
+
+      <td>
+        <span th:if="${inquiry.anonymous}" class="text-muted">익명</span>
+        <span th:unless="${inquiry.anonymous}" th:text="${inquiry.nickname}"></span>
+      </td>
+      <td th:text="${#temporals.format(inquiry.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td>
+        <span th:if="${inquiry.answer}">답변 완료</span>
+        <span th:unless="${inquiry.answer}">문의 중</span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="text-right mb-3">
+    <a class="btn btn-primary" href="/inquiry/submit">문의하기</a>
   </div>
 </div>
-
-<script th:inline="javascript">
-  function initMap() {
-    var container = document.getElementById('map');
-    var options = {
-      center: new kakao.maps.LatLng(/*[[${photoSpot.latitude_1}]]*/, /*[[${photoSpot.longitude_1}]]*/),
-      level: 7
-    };
-    var map = new kakao.maps.Map(container, options);
-    /*[# th:each="i : ${#numbers.sequence(1,5)}"]*/
-    var markerPosition = new kakao.maps.LatLng(/*[[${photoSpot['latitude_' + i]}]]*/, /*[[${photoSpot['longitude_' + i]}]]*/);
-    var marker = new kakao.maps.Marker({
-      position: markerPosition,
-      map: map
-    });
-    marker.setMap(map);
-    /*[/]*/
-  }
-  window.onload = function() {
-    initMap();
-  };
-</script>
 
 
 </body>

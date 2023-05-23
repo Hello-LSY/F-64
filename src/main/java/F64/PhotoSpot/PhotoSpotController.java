@@ -1,4 +1,4 @@
-package F64.Board.PhotoSpot;
+package F64.PhotoSpot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

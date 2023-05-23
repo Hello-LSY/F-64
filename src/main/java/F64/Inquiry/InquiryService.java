@@ -24,4 +24,12 @@ public class InquiryService {
         inquiry.setNickname(user.getNickname());
         inquiryRepository.save(inquiry);
     }
+
+    public void saveAnswer(Long id, String answer) {
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("해당 문의글이 없습니다."));
+        inquiry.setAnswer(answer);
+        inquiryRepository.save(inquiry);
+    }
+
 }

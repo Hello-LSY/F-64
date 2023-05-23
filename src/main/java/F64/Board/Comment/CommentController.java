@@ -25,8 +25,6 @@ public class CommentController {
     public String addComment(@PathVariable("id") Long boardId, @RequestParam("content") String content, Authentication authentication) {
 
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
-
-        System.out.println("아이디 확인 " + customUser.getId());
         boardService.saveComment(customUser.getId(), boardId, content);
 
         return "redirect:/board/view/" + boardId;

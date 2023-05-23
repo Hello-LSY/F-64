@@ -1,4 +1,4 @@
-package F64.Controller;
+package F64.Home;
 
 import F64.User.CustomUser;
 import F64.User.Member;
@@ -18,13 +18,9 @@ import java.util.Optional;
 @Controller
 public class HomeController {
 
-    private final UserRepository userRepository;
     private final UserSecurityService userSecurityService;
     @GetMapping("/")
     public String homeForm(Model model) {
-        model.addAttribute("title", "사진 동아리 홈페이지");
-        model.addAttribute("description", "순간을 담아 영원히");
-
         CustomUser user = userSecurityService.getCurrentUser();
         String nickname = user != null ? user.getNickname() : "non-login status";
         model.addAttribute("nickname", nickname);

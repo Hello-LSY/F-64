@@ -1,4 +1,4 @@
-package F64.Board.PhotoSpot;
+package F64.PhotoSpot;
 
 import F64.User.Member;
 import lombok.Data;
