@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -22,7 +23,7 @@ public class DeletedBoard {
     private String content;
     private String writerNickname;
     private String writerUsername;
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
     private int viewCount;
     private int likeCount;
 

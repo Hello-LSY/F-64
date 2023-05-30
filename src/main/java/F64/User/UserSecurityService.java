@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -37,9 +38,10 @@ public class UserSecurityService implements UserDetailsService {
         } else {
             authorities.add(new SimpleGrantedAuthority(UserRole.USER.getValue()));
         }
-
+        //사용자 세션 생성
+        String sessionId = UUID.randomUUID().toString();
         //User 객체를 상속받는 CustomUser 객체 생성
-        CustomUser customUser = new CustomUser(member.getId(), member.getUsername(), member.getPassword(), authorities, member.getNickname());
+        CustomUser customUser = new CustomUser(member.getId(), member.getUsername(), member.getPassword(), authorities, member.getNickname(), sessionId);
 
         return customUser;
         }

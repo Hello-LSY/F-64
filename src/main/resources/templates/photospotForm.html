@@ -50,29 +50,40 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/"> <img th:src="@{/images/f64.png}" height="35px" alt="photo"> </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item" sec:authorize="isAuthenticated()">
-                <span th:text="${nickname}  ">  </span>
-            </li>
-            <!-- 로그인 상태인 경우 로그아웃 버튼 보이기 -->
-            <li class="nav-item" sec:authorize="isAuthenticated()">
-                <form class="form-inline" th:action="@{/user/logout}" method="post">
-                    <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">로그아웃</button>
-                </form>
-            </li>
-            <!-- 로그아웃 상태인 경우 로그인 버튼 보이기 -->
-            <li class="nav-item" sec:authorize="!isAuthenticated()">
-                <a class="nav-link" href="/user/login">로그인</a>
-            </li>
-            <li class="nav-item" sec:authorize="!isAuthenticated()">
-                <a class="nav-link" href="/user/signup">회원가입</a>
-            </li>
-        </ul>
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img th:src="@{/images/f64.png}" height="35px" alt="photo">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <span class="nav-link">
+                        <span class="mr-2" th:text="'환영합니다, ' + ${nickname}"></span>
+                    </span>
+                </li>
+                <!-- 로그인 상태인 경우 로그아웃 버튼 보이기 -->
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form class="form-inline" th:action="@{/user/logout}" method="post">
+                        <button class="btn btn-link nav-link" type="submit">
+                            <i class="fas fa-sign-out-alt"></i>
+                            로그아웃
+                        </button>
+                    </form>
+                </li>
+
+                <!-- 로그아웃 상태인 경우 로그인 버튼 보이기 -->
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" href="/user/login">로그인</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" href="/user/signup">회원가입</a>
+                </li>
+            </ul>
+        </div>
         <ul class="navbar-nav">
             <li class="nav-item active">
                 <a class="nav-link" href="/">홈</a>
@@ -93,9 +104,8 @@
     </div>
 </nav>
 
-<h1 style="font-weight: bold">출사 신청 폼</h1>
 
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         <div class="col-md-8 p-0">
             <div class="map_wrap">
@@ -120,15 +130,15 @@
         <div class="col-md-4 p-4 bg-light">
             <form id="description-form">
                 <div class="form-group">
-                    <label for="title">출사지 제목</label>
+                    <label for="title" style="font-weight: bold" class="mt-1 mb-1">출사지 제목</label>
                     <input type="text" class="form-control" id="title">
                 </div>
                 <div class="form-group">
-                    <label for="description">출사지에 대한 설명</label>
+                    <label for="description" style="font-weight: bold" class="mt-1 mb-1">출사지에 대한 설명</label>
                     <textarea class="form-control" id="description" rows="10"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="date">출사날짜</label>
+                <div class="form-group mt-1 mb-1">
+                    <label for="date" style="font-weight: bold" class="mt-1">출사날짜</label>
                     <input type="date" class="form-control" id="date">
                 </div>
                 <button type="submit" class="btn btn-primary">출사지 신청</button>
@@ -136,6 +146,7 @@
         </div>
     </div>
 </div>
+
 
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <script src="/js/bootstrap.min.js"></script>
@@ -218,6 +229,10 @@
     $('#description-form').submit(function(e) {
         e.preventDefault();
 
+        if (markers2.length < 1) {
+            alert("최소 하나 이상의 마커가 필요합니다.");
+            return;
+        }
         var description = $('#description').val();
         var title = $('#title').val();
         var date = $('#date').val(); // 출사날짜

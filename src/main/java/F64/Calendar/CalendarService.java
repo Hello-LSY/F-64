@@ -34,4 +34,12 @@ public class CalendarService {
         calendarRepository.deleteById(id);
     }
 
+    public List<Event>getEventList(){
+        return calendarRepository.findAll();
+    }
+
+    public List<Event> getAlldayEventsOrderByStartDateDesc() {
+        return calendarRepository.findByAllDayTrueOrderByStartDateDesc();
+    }
+
 }

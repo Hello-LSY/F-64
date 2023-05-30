@@ -2,18 +2,16 @@ package F64.Board;
 
 
 import F64.Board.Comment.Comment;
-import F64.User.Member;
+import F64.User.CustomUser;
 import F64.User.UserRepository;
+import F64.User.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class BoardController {
@@ -22,19 +20,26 @@ public class BoardController {
     private BoardService boardService;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private UserSecurityService userSecurityService;
 
     @GetMapping("/board/list")
     public String BoardForm(Model model){
         List<Board> boardList = boardService.getBoardList();
+        CustomUser user = userSecurityService.getCurrentUser();
+        String nickname = user != null ? user.getNickname() : "null";
+        model.addAttribute("nickname", nickname);
         model.addAttribute("boardList", boardList);
-        return "listForm";
+        return "boardForm";
     }
 
     @GetMapping("/board/write")
     public String BoardWrite(Model model){
+        CustomUser user = userSecurityService.getCurrentUser();
+        String nickname = user != null ? user.getNickname() : "null";
+        model.addAttribute("nickname", nickname);
         model.addAttribute("board", new Board());
         return "writeForm";
     }
@@ -50,6 +55,9 @@ public class BoardController {
     public String BoardUpdate(@PathVariable Long id, Model model){
         //id에 해당하는 게시물 가져오기
         Board board = boardService.getBoardById(id);
+        CustomUser user = userSecurityService.getCurrentUser();
+        String nickname = user != null ? user.getNickname() : "null";
+        model.addAttribute("nickname", nickname);
         //board 속성 넘겨줌
         model.addAttribute("board", board);
         return "updateForm";
@@ -65,10 +73,13 @@ public class BoardController {
     public String BoardView(@PathVariable Long id, Model model, Authentication authentication){
         Board board = boardService.getBoardAndIncreaseViewCount(id);
         model.addAttribute("board", board);
-
+        CustomUser user = userSecurityService.getCurrentUser();
+        String nickname = user != null ? user.getNickname() : "non-login status";
+        model.addAttribute("nickname", nickname);
         boolean isWriter = false;
         if(authentication != null){
             String username = authentication.getName();
+
             if(username.equals(board.getWriterUsername())){
                 isWriter = true;
             }

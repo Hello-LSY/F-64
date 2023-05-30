@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class InquiryService {
@@ -32,4 +34,15 @@ public class InquiryService {
         inquiryRepository.save(inquiry);
     }
 
+    public List<Inquiry> getInquiryList(){
+        List<Inquiry> inquiryList = inquiryRepository.findAll();
+        Collections.reverse(inquiryList); // 리스트를 역순으로 정렬
+        return inquiryList;
+    }
+
+    public void deleteInquiry(Long id){
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("아이디가 없습니다."));
+        inquiryRepository.deleteById(id);
+    }
 }

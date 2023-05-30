@@ -38,7 +38,7 @@ public class BoardService {
 
     //게시글 쓰기
     public void writeBoard(Board board) {
-        board.setCreatedDate(LocalDate.now());
+        board.setCreatedDate(LocalDateTime.now());
 
         CustomUser user = userSecurityService.getCurrentUser();
         String nickname = user.getNickname();
@@ -79,7 +79,9 @@ public class BoardService {
     }
 
     public List<Board> getBoardList() {
-        return boardRepository.findAll();
+        List<Board> boardList = boardRepository.findAll();
+        Collections.reverse(boardList); // 리스트를 역순으로 정렬
+        return boardList;
     }
 
     public Board getBoardById(Long id){

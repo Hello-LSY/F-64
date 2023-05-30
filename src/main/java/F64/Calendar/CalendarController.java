@@ -1,9 +1,12 @@
 package F64.Calendar;
 
+import F64.User.CustomUser;
+import F64.User.UserSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +19,13 @@ import java.util.List;
 public class CalendarController {
 
     private final CalendarService calendarService;
-
     private static final Logger logger = LoggerFactory.getLogger(CalendarController.class);
-
     @Autowired
     public CalendarController(CalendarService calendarService){
         this.calendarService = calendarService;
     }
+    @Autowired
+    private UserSecurityService userSecurityService;
 
     @PostMapping("/calendar/event/add")
     public @ResponseBody Event addEvent(@RequestParam String title, @RequestParam String startDate, @RequestParam String endDate, @RequestParam(defaultValue = "false") boolean allDay) {
@@ -34,8 +37,10 @@ public class CalendarController {
 
 
     @GetMapping("/calendar")
-    public String CalendarForm(){
-
+    public String CalendarForm(Model model){
+        CustomUser user = userSecurityService.getCurrentUser();
+        String nickname = user != null ? user.getNickname() : "null";
+        model.addAttribute("nickname", nickname);
         return "f64Calendar";
     }
 
