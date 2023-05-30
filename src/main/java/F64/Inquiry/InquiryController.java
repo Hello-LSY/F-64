@@ -64,7 +64,7 @@ public class InquiryController {
         if (inquiry.isPresent()) {
             Inquiry actualInquiry = inquiry.get();
             String inqNickname = actualInquiry.getNickname();
-            String userNickname = user.getUsername();
+            String userNickname = user.getNickname();
             if(authentication != null){
                 if (userNickname.equals(inqNickname) || userNickname.equals("admin")) {
                     isWriter = true;
