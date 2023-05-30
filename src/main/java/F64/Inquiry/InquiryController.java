@@ -64,12 +64,12 @@ public class InquiryController {
         if (inquiry.isPresent()) {
             Inquiry actualInquiry = inquiry.get();
             String inqNickname = actualInquiry.getNickname();
-
+            String userNickname = user.getUsername();
             if(authentication != null){
-                if (inqNickname.equals(user.getNickname()) || inqNickname.equals("admin")) {
+                if (userNickname.equals(inqNickname) || userNickname.equals("admin")) {
                     isWriter = true;
                 }
-                if (inqNickname.equals("admin")) {
+                if (userNickname.equals("admin")) {
                     isAdmin = true;
                 }
             }else {

@@ -6,6 +6,8 @@ import F64.User.CustomUser;
 import F64.User.UserRepository;
 import F64.User.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,12 +28,17 @@ public class BoardController {
     private UserSecurityService userSecurityService;
 
     @GetMapping("/board/list")
-    public String BoardForm(Model model){
+    public String BoardForm(Model model, Pageable pageable){
         List<Board> boardList = boardService.getBoardList();
         CustomUser user = userSecurityService.getCurrentUser();
         String nickname = user != null ? user.getNickname() : "null";
+        Page<Board> boardPage = boardService.getBoardPage(pageable);
+
+
         model.addAttribute("nickname", nickname);
         model.addAttribute("boardList", boardList);
+        model.addAttribute("boardPage", boardPage);
+
         return "boardForm";
     }
 

@@ -10,6 +10,8 @@ import F64.User.Member;
 import F64.User.UserRepository;
 import F64.User.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import F64.User.CustomUser;
 
@@ -165,5 +167,9 @@ public class BoardService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 댓글이 없습니다."));
         commentRepository.deleteById(commentId);
+    }
+
+    public Page<Board> getBoardPage(Pageable pageable) {
+        return boardRepository.findAll(pageable);
     }
 }
