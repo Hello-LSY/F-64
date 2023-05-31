@@ -23,9 +23,10 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "user/**").permitAll()
+                .antMatchers("/", "/user/**").permitAll()
+                .antMatchers("/css/**", "/images/**", "/js/**", "/fullcalendar-6.1.5/**").permitAll()
                 .antMatchers("/calendar/event/add", "/calendar/event/delete/**","/inquiry/answer/**").hasRole("ADMIN")
-
+                .anyRequest().authenticated()
                 .and()
                     .headers()
                     .addHeaderWriter(new XFrameOptionsHeaderWriter(

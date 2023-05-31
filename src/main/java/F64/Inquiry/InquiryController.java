@@ -94,7 +94,7 @@ public class InquiryController {
 
     @PostMapping("/inquiry/delete/{id}")
     public String deleteInquiry(@PathVariable("id") Long id){
-        inquiryRepository.deleteById(id);
+        inquiryService.deleteInquiry(id);
         return "redirect:/inquiry/list";
     }
 
