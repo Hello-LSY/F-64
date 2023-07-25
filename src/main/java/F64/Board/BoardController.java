@@ -5,6 +5,7 @@ import F64.Board.Comment.Comment;
 import F64.User.CustomUser;
 import F64.User.UserRepository;
 import F64.User.UserSecurityService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,20 +13,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 public class BoardController {
 
-    @Autowired
-    private BoardService boardService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private BoardRepository boardRepository;
-    @Autowired
-    private UserSecurityService userSecurityService;
+
+    private final BoardService boardService;
+    private final UserSecurityService userSecurityService;
 
     @GetMapping("/board/list")
     public String BoardForm(Model model, Pageable pageable){
@@ -52,11 +52,12 @@ public class BoardController {
     }
 
     @PostMapping("/board/writePro")
-    public String BoardWritePro(Board board) {
+    public String BoardWritePro(Board board, @RequestParam("imageFile") MultipartFile imageFile, Model model) {
 
-        boardService.writeBoard(board);
+        boardService.writeBoard(board, imageFile);
         return "redirect:/board/list";
     }
+
 
     @GetMapping("/board/update/{id}")
     public String BoardUpdate(@PathVariable Long id, Model model){

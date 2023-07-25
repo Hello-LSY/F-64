@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,6 +18,8 @@ public class Board {
     private String content;
     private String writerNickname;
     private String writerUsername;
+    private String filename;
+    private String filepath;
 
     private LocalDateTime createdDate;
     private int viewCount;

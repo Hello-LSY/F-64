@@ -3,6 +3,7 @@ package F64.Board.Like;
 import F64.Board.BoardService;
 import F64.User.Member;
 import F64.User.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,13 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Controller
 public class BoardLikeController {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private BoardService boardService;
+
+    private final UserRepository userRepository;
+    private final BoardService boardService;
 
     @PostMapping("/board/like/{id}")
     public ModelAndView likeBoard(@PathVariable("id") Long id) {

@@ -9,37 +9,41 @@ import F64.Board.Like.BoardLikeRepository;
 import F64.User.Member;
 import F64.User.UserRepository;
 import F64.User.UserSecurityService;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import F64.User.CustomUser;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+@RequiredArgsConstructor
 @Transactional
 @Service
 public class BoardService {
-    @Autowired
-    private BoardRepository boardRepository;
-    @Autowired
-    private BoardLikeRepository boardLikeRepository;
-    @Autowired
-    private UserSecurityService userSecurityService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private DeletedBoardRepository deletedBoardRepository;
-    @Autowired
-    private CommentRepository commentRepository;
+
+    private final BoardRepository boardRepository;
+    private final BoardLikeRepository boardLikeRepository;
+    private final UserSecurityService userSecurityService;
+    private final UserRepository userRepository;
+    private final DeletedBoardRepository deletedBoardRepository;
+    private final CommentRepository commentRepository;
+    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
+
 
     //게시글 쓰기
-    public void writeBoard(Board board) {
+    public void writeBoard(Board board, MultipartFile file) {
         board.setCreatedDate(LocalDateTime.now());
 
         CustomUser user = userSecurityService.getCurrentUser();
@@ -49,8 +53,27 @@ public class BoardService {
         board.setViewCount(0);
         board.setWriterUsername(user.getUsername());
 
+        if(!file.isEmpty() && file != null) {
+            try {
+                String filePath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static" + File.separator + "files";
+                UUID uuid = UUID.randomUUID();
+                String fileName = uuid + "_" + file.getOriginalFilename();
+                File saveFile = new File(filePath, fileName);
+                file.transferTo(saveFile);
+                board.setFilename(fileName);
+                board.setFilepath("/files/" + fileName);
+                // 로그 기록
+                logger.info("Image file saved at: {}", filePath);
+            } catch (IOException e) {
+                // 예외 처리
+                logger.error("에러발생 :", e);
+            }
+        }
+
         boardRepository.save(board);
     }
+
+
 
     //게시글 보기
     public Board getBoardAndIncreaseViewCount(Long id){
@@ -172,4 +195,9 @@ public class BoardService {
     public Page<Board> getBoardPage(Pageable pageable) {
         return boardRepository.findAll(pageable);
     }
+
+
+
 }
+
+

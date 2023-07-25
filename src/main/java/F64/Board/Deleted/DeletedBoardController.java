@@ -1,6 +1,7 @@
 package F64.Board.Deleted;
 
 import F64.Board.BoardService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,11 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+@RequiredArgsConstructor
 @Controller
 public class DeletedBoardController {
 
-    @Autowired
-    private BoardService boardService;
+
+    private final BoardService boardService;
 
     @PostMapping("/board/delete/{id}")
     public ModelAndView BoardDelete(@PathVariable Long id)

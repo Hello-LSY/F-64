@@ -32,9 +32,14 @@
     .info span {
         margin-right: 10px;
     }
+    .appending_file_box ul li a {
+      text-decoration: none; /* 밑줄 제거 */
+      color: gray; /* 회색 폰트 색상 적용 */
+    }
 </style>
 </head>
 <body>
+
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
@@ -113,6 +118,11 @@
     <td class="content" colspan="2" th:text="${board.content}"></td>
   </tr>
   <tr>
+    <td colspan="2" class="image-container">
+      <img th:if="${board.filepath}" th:src="@{'/' + ${board.filepath}}" alt="Board Image" style="max-width: 100%; max-height: 300px;">
+    </td>
+  </tr>
+  <tr>
     <td colspan="2" class="btn-group">
       <form sec:authorize="isAuthenticated()" id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
         <button type="submit" class="btn btn-success">추천</button>
@@ -130,6 +140,19 @@
   </tr>
   </tbody>
 </table>
+
+  <div class="appending_file_box">
+    <strong>첨부 파일</strong>
+    <ul class="appending_file">
+      <li>
+        <a th:if="${board.filepath}" th:href="@{'/' + ${board.filepath}}" th:download="${board.filename}">
+          <!-- 파일 이름 표시 -->
+          <span th:text="${board.filename}"></span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
 
 <div th:if="${commentList}" class="card mt-5">
   <div class="card-header">
