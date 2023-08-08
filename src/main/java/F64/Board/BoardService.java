@@ -86,6 +86,8 @@ public class BoardService {
     public void deleteBoard(Long boardId){
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
+
+
         DeletedBoard deletedBoard = new DeletedBoard();
         deletedBoard.setBoard(board);
         deletedBoard.setContent(board.getContent());
@@ -95,7 +97,10 @@ public class BoardService {
         deletedBoard.setCreatedDate(board.getCreatedDate());
         deletedBoard.setLikeCount(board.getLikeCount());
         deletedBoard.setViewCount(board.getViewCount());
+        deletedBoard.setFilename(board.getFilename());
         deletedBoardRepository.save(deletedBoard);
+
+
 
         //댓글도 삭제 추가
         commentRepository.deleteByBoardId(boardId);
@@ -114,11 +119,28 @@ public class BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. "));
     }
 
-    public void updateBoard(Long id, Board updateBoard){
+    public void updateBoard(Long id, Board updateBoard, MultipartFile file){
         Board board = boardRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
         board.setTitle(updateBoard.getTitle());
         board.setContent(updateBoard.getContent());
+
+        if(!file.isEmpty() && file != null) {
+            try {
+                String filePath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static" + File.separator + "files";
+                UUID uuid = UUID.randomUUID();
+                String fileName = uuid + "_" + file.getOriginalFilename();
+                File saveFile = new File(filePath, fileName);
+                file.transferTo(saveFile);
+                board.setFilename(fileName);
+                board.setFilepath("/files/" + fileName);
+                // 로그 기록
+                logger.info("Image file saved at: {}", filePath);
+            } catch (IOException e) {
+                // 예외 처리
+                logger.error("에러발생 :", e);
+            }
+        }
 
         boardRepository.save(board);
     }

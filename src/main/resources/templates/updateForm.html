@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<head>
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"><head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/jquery-3.6.4.js"></script>
 
-  <style>
-        .custom-textarea {
-        height: 400px;
-    }
-    </style>
   <title></title>
+  <style>
+    .custom-textarea {
+      height: 400px;
+    }
+  </style>
 </head>
 <body>
 
@@ -72,31 +71,60 @@
 </nav>
 
 
-<form method="post" th:action="@{/board/updatePro/{id}(id=${board.id})}" th:object="${board}">
+<form method="post" th:action="@{/board/updatePro/__${board.id}__}" th:object="${board}" enctype="multipart/form-data">
   <div class="container">
-    <h3 class="mt-3 mb-3">수정</h3>
-    <form method="post" th:action="@{/board/writePro}" th:object="${board}">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="form-group">
-            <label for="title" style="font-weight: bold">제목</label>
-            <input type="text" class="form-control" id="title" name="title" required="required" th:value="*{title}" />
-          </div>
+    <h3 class="mt-3 mb-3">글쓰기</h3>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="title" style="font-weight: bold">제목</label>
+          <input type="text" class="form-control" id="title" name="title" required="required" th:value="*{title}" />
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <div class="form-group">
-            <label for="content" style="font-weight: bold">내용</label>
-            <textarea class="form-control custom-textarea" id="content" name="content" required="required" th:text="*{content}"></textarea>
-          </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="content" style="font-weight: bold">내용</label>
+          <textarea class="form-control custom-textarea" id="content" name="content" required="required" th:text="*{content}"></textarea>
         </div>
       </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary">등록</button>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="imageFile" style="font-weight: bold">이미지 업로드</label>
+          <input type="file" id="imageFile" name="imageFile" multiple="multiple" />
+          <div id="imagePreview"></div> <!-- 이미지 미리보기를 표시할 컨테이너 -->
+        </div>
       </div>
-    </form>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">등록</button>
+    </div>
   </div>
 </form>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  $(document).ready(function () {
+    // 이미지 파일 선택 input 요소의 이벤트 핸들러
+    $("#imageFile").on("change", function (event) {
+      var input = event.target;
+      if (input.files && input.files[0]) {
+        var file = input.files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          // 이미지 미리보기를 표시할 컨테이너에 이미지를 추가
+          $("#imagePreview").html('<img src="' + e.target.result + '" alt="Preview Image" style="max-width: 100%; max-height: 300px;">');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+  });
+  /*]]>*/
+</script>
+
 </body>
 </html>

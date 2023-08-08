@@ -26,5 +26,6 @@ public class DeletedBoard {
     private LocalDateTime createdDate;
     private int viewCount;
     private int likeCount;
+    private String filename;
 
 }

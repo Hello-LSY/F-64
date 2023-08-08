@@ -61,19 +61,17 @@ public class BoardController {
 
     @GetMapping("/board/update/{id}")
     public String BoardUpdate(@PathVariable Long id, Model model){
-        //id에 해당하는 게시물 가져오기
         Board board = boardService.getBoardById(id);
         CustomUser user = userSecurityService.getCurrentUser();
         String nickname = user != null ? user.getNickname() : "null";
         model.addAttribute("nickname", nickname);
-        //board 속성 넘겨줌
         model.addAttribute("board", board);
         return "updateForm";
     }
 
     @PostMapping("/board/updatePro/{id}")
-    public String BoardUpdatePro(@PathVariable Long id,  @ModelAttribute Board board){
-        boardService.updateBoard(id, board);
+    public String BoardUpdatePro(@PathVariable Long id,  @ModelAttribute Board board, @RequestParam("imageFile") MultipartFile imageFile){
+        boardService.updateBoard(id, board, imageFile);
         return "redirect:/board/list";
     }
 
