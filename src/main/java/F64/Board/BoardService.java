@@ -12,9 +12,6 @@ import F64.User.UserSecurityService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -53,25 +49,28 @@ public class BoardService {
         board.setViewCount(0);
         board.setWriterUsername(user.getUsername());
 
-        if(!file.isEmpty() && file != null) {
+        if (file != null && !file.isEmpty()) {
             try {
                 String filePath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static" + File.separator + "files";
-                UUID uuid = UUID.randomUUID();
-                String fileName = uuid + "_" + file.getOriginalFilename();
-                File saveFile = new File(filePath, fileName);
-                file.transferTo(saveFile);
-                board.setFilename(fileName);
-                board.setFilepath("/files/" + fileName);
-                // 로그 기록
+                saveFile(board, file, filePath);
                 logger.info("Image file saved at: {}", filePath);
             } catch (IOException e) {
-                // 예외 처리
                 logger.error("에러발생 :", e);
             }
         }
 
         boardRepository.save(board);
     }
+
+    private void saveFile(Board board, MultipartFile file, String filePath) throws IOException {
+        UUID uuid = UUID.randomUUID();
+        String fileName = uuid + "_" + file.getOriginalFilename();
+        File saveFile = new File(filePath, fileName);
+        file.transferTo(saveFile);
+        board.setFilename(fileName);
+        board.setFilepath("/static/files/" + fileName);
+    }
+
 
 
 
@@ -119,25 +118,18 @@ public class BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. "));
     }
 
-    public void updateBoard(Long id, Board updateBoard, MultipartFile file){
+    public void updateBoard(Long id, Board updateBoard, MultipartFile file) {
         Board board = boardRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
         board.setTitle(updateBoard.getTitle());
         board.setContent(updateBoard.getContent());
 
-        if(!file.isEmpty() && file != null) {
+        if (file != null && !file.isEmpty()) {
             try {
                 String filePath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static" + File.separator + "files";
-                UUID uuid = UUID.randomUUID();
-                String fileName = uuid + "_" + file.getOriginalFilename();
-                File saveFile = new File(filePath, fileName);
-                file.transferTo(saveFile);
-                board.setFilename(fileName);
-                board.setFilepath("/files/" + fileName);
-                // 로그 기록
+                saveFile(board, file, filePath);
                 logger.info("Image file saved at: {}", filePath);
             } catch (IOException e) {
-                // 예외 처리
                 logger.error("에러발생 :", e);
             }
         }

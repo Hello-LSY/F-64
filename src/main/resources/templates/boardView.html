@@ -119,7 +119,7 @@
   </tr>
   <tr>
     <td colspan="2" class="image-container">
-      <img th:if="${board.filepath}" th:src="@{'/' + ${board.filepath}}" alt="Board Image" style="max-width: 100%; max-height: 300px;">
+      <img th:if="${board.filepath}" th:src="@{/files/__${board.filename}__}" alt="Board Image" style="max-width: 100%; max-height: 300px;">
     </td>
   </tr>
   <tr>
@@ -145,7 +145,7 @@
     <strong>첨부 파일</strong>
     <ul class="appending_file">
       <li>
-        <a th:if="${board.filepath}" th:href="@{'/' + ${board.filepath}}" th:download="${board.filename}">
+        <a th:if="${board.filepath}" th:href="@{/files/__${board.filename}__}" th:download="${board.filename}">
           <!-- 파일 이름 표시 -->
           <span th:text="${board.filename}"></span>
         </a>
@@ -154,7 +154,8 @@
   </div>
 
 
-<div th:if="${commentList}" class="card mt-5">
+
+<div  th:if="${commentList}" class="card mt-5">
   <div class="card-header">
     <h5 class="card-title" style="font-weight: bold;">댓글 목록</h5>
   </div>

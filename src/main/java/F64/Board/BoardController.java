@@ -52,7 +52,7 @@ public class BoardController {
     }
 
     @PostMapping("/board/writePro")
-    public String BoardWritePro(Board board, @RequestParam("imageFile") MultipartFile imageFile, Model model) {
+    public String BoardWritePro(Board board, @RequestParam("imageFile") MultipartFile imageFile) {
 
         boardService.writeBoard(board, imageFile);
         return "redirect:/board/list";
