@@ -60,6 +60,9 @@
       <li class="nav-item">
         <a class="nav-link" href="/inquiry/list">Q&A</a>
       </li>
+      <li class="nav-item">
+        <a class="btn btn-outline-primary" href="/upload" >이미지 업스케일링</a>
+      </li>
     </ul>
   </div>
 </nav>
@@ -71,8 +74,8 @@
       <h4 class="card-title mb-3" th:text="${inquiry.title}"></h4>
       <p class="card-text mb-3" th:text="${inquiry.content}"></p>
       <p class="card-text mb-1">
-        <span th:if="${inquiry.anonymous && (isWriter || nickname == 'admin')}" th:text="${inquiry.nickname}"></span>
-        <span th:unless="${inquiry.anonymous && (isWriter || nickname == 'admin')}" th:text="'익명'"></span>
+        <span th:if="${inquiry.anonymous && isWriter}" th:text="${inquiry.nickname}"></span>
+        <span th:unless="${inquiry.anonymous && isWriter}" th:text="'익명'"></span>
       </p>
       <p class="card-text mb-1">
         <strong>문의 날짜:</strong>

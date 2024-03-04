@@ -130,7 +130,7 @@ public class BoardService {
                 saveFile(board, file, filePath);
                 logger.info("Image file saved at: {}", filePath);
             } catch (IOException e) {
-                logger.error("에러발생 :", e);
+                logger.error("에러발생 :",e);
             }
         }
 

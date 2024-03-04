@@ -23,6 +23,7 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
+//                .antMatchers(("/**")).permitAll()
                 .antMatchers("/", "/user/**").permitAll()
                 .antMatchers("/css/**", "/images/**", "/js/**", "/fullcalendar-6.1.5/**").permitAll()
                 .antMatchers("/calendar/event/add", "/calendar/event/delete/**","/inquiry/answer/**").hasRole("ADMIN")

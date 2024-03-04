@@ -54,37 +54,33 @@ public class InquiryController {
 
     @GetMapping("/inquiry/details/{id}")
     public String showInquiryDetails(@PathVariable("id") Long id, Model model, Authentication authentication) {
-        //null 대비. Optional말고 .orElseThrow로해도됨
         Optional<Inquiry> inquiry = inquiryRepository.findById(id);
-        boolean isWriter = false;
-        boolean isAdmin = false;
-        CustomUser user = userSecurityService.getCurrentUser();
-        String nickname = user != null ? user.getNickname() : "null";
 
         if (inquiry.isPresent()) {
             Inquiry actualInquiry = inquiry.get();
-            String inqNickname = actualInquiry.getNickname();
-            String userNickname = user.getNickname();
-            if(authentication != null){
-                if (userNickname.equals(inqNickname) || userNickname.equals("admin")) {
-                    isWriter = true;
-                }
-                if (userNickname.equals("admin")) {
-                    isAdmin = true;
-                }
-            }else {
+            CustomUser user = userSecurityService.getCurrentUser();
+
+            if (user == null) {
                 throw new NoSuchElementException("non-login-status");
             }
+
+            String inqNickname = actualInquiry.getNickname();
+            String userNickname = user.getNickname();
+
+            boolean isWriter = userNickname.equals(inqNickname) || userNickname.equals("admin");
+            boolean isAdmin = userNickname.equals("admin");
+
             model.addAttribute("inquiry", actualInquiry);
-            model.addAttribute("isWriter",isWriter);
+            model.addAttribute("isWriter", isWriter);
             model.addAttribute("isAdmin", isAdmin);
-            model.addAttribute("nickname", nickname);
-        }
-        else {
+            model.addAttribute("nickname", userNickname);
+
+            return "inquiryDetails";
+        } else {
             throw new NoSuchElementException("Inquiry not found");
         }
-        return "inquiryDetails";
     }
+
 
     @PostMapping("/inquiry/answer/{id}")
     public String saveAnswer(@PathVariable("id") Long id, @RequestParam("answer") String answer) {
