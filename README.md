@@ -32,6 +32,11 @@
 
 ## ERD 및 구성도
 
+아키텍처
+
+![f64 (1)](https://github.com/user-attachments/assets/32510fea-5694-427f-a5b2-9a63f126b94a)
+
+
 웹 페이지 
 
 <img width="50%" src="https://github.com/Hello-LSY/F-64/assets/81401604/0dd51107-cf9f-4633-820e-463f90701f37">
