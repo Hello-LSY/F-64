@@ -1,23 +1,25 @@
 package F64.Board.Deleted;
 
-import F64.Board.Board;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DeletedBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="board_id")
-    private Board board;
+    @Column(name = "board_id")
+    private Long boardId; // @OneToOne 직접참조 이슈 발생 해결 : Board 객체 대신 boardId만 저장
 
     private String title;
     private String content;
@@ -27,5 +29,4 @@ public class DeletedBoard {
     private int viewCount;
     private int likeCount;
     private String filename;
-
 }
