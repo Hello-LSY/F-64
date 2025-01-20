@@ -1,22 +1,18 @@
 package F64.Calendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class CalendarService {
 
-
     private final CalendarRepository calendarRepository;
 
-    @Autowired
-    public CalendarService(CalendarRepository calendarRepository) {
-        this.calendarRepository = calendarRepository;
-    }
-    public List<Event> getAllEvent(){
+    public List<Event> getAllEvent() {
         return calendarRepository.findAll();
     }
 
@@ -29,17 +25,15 @@ public class CalendarService {
         return calendarRepository.save(event);
     }
 
-
-    public void deleteEvent(Long id){
+    public void deleteEvent(Long id) {
         calendarRepository.deleteById(id);
     }
 
-    public List<Event>getEventList(){
+    public List<Event> getEventList() {
         return calendarRepository.findAll();
     }
 
-    public List<Event> getAlldayEventsOrderByStartDateDesc() {
+    public List<Event> getAllDayEventsOrderByStartDateDesc() {
         return calendarRepository.findByAllDayTrueOrderByStartDateDesc();
     }
-
 }
