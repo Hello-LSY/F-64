@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Upscale Result</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+        }
+        .image-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            text-align: center;
+            padding: 1rem;
+        }
+        .image-card img {
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+        .download-btn {
+            background-color: #00b894;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .download-btn:hover {
+            background-color: #019875;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 네비게이션 바 -->
+<div th:replace="layout/navbar :: fragment"></div>
+
+<div class="max-w-6xl mx-auto p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Original -->
+        <div class="image-card">
+            <h2 class="text-xl font-bold mb-2 text-gray-800">Original Image</h2>
+            <img th:src="${original_image_path}" alt="Original Image" />
+        </div>
+
+        <!-- Upscaled -->
+        <div class="image-card">
+            <h2 class="text-xl font-bold mb-2 text-gray-800">Upscaled Image</h2>
+            <img th:src="${result_image_path}" alt="Upscaled Image" />
+            <div class="mt-3">
+                <a class="download-btn"
+                   th:href="${result_image_path}"
+                   th:attr="download=${result_image_path}">⬇ 다운로드</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 에러 메시지 -->
+    <div th:if="${error != null}" class="bg-red-100 text-red-700 mt-6 p-4 rounded">
+        <h3 class="text-lg font-semibold">Error</h3>
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- 버튼들 -->
+    <div class="text-center mt-6 space-x-3">
+        <a href="/" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">🏠 홈으로</a>
+        <button onclick="window.location.reload();"
+                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md">
+            🔄 새로고침
+        </button>
+        <a href="/upload" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">📂 다른 이미지 업스케일</a>
+    </div>
+
+    <div class="mt-4 text-center text-gray-700">
+        <p>이미지가 안 보일 경우 <strong>새로고침</strong> 해보거나, <strong>브라우저 캐시</strong>를 지워보세요.</p>
+    </div>
+</div>
+
+</body>
+</html>

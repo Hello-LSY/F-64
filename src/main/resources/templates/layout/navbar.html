@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<nav th:fragment="fragment" class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- 로고 -->
+            <div class="flex">
+                <a href="/" class="flex items-center">
+                    <img th:src="@{/images/f64.png}" class="h-10" alt="Logo">
+                </a>
+            </div>
+
+            <!-- 네비게이션 메뉴 -->
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="/" class="text-gray-700 hover:text-blue-500 text-lg font-medium">🏠 홈</a>
+                <a href="/board/list" class="text-gray-700 hover:text-blue-500 text-lg font-medium">📌 자유 게시판</a>
+                <a href="/photospot/list" class="text-gray-700 hover:text-blue-500 text-lg font-medium">📸 출사지 신청</a>
+                <a href="/calendar" class="text-gray-700 hover:text-blue-500 text-lg font-medium">📅 행사 일정</a>
+                <a href="/inquiry/list" class="text-gray-700 hover:text-blue-500 text-lg font-medium">❓ Q&A</a>
+                <a href="/upload" class="text-gray-700 hover:text-blue-500 text-lg font-medium">🎨 업스케일링</a>
+            </div>
+
+            <!-- 로그인 / 로그아웃 -->
+            <div class="hidden md:flex items-center space-x-4">
+                <span sec:authorize="isAuthenticated()" class="text-gray-700">
+                    <span class="font-semibold" th:text="'환영합니다, ' + ${nickname}"></span>
+                </span>
+                <form sec:authorize="isAuthenticated()" th:action="@{/user/logout}" method="post">
+                    <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">🚪 로그아웃</button>
+                </form>
+                <a sec:authorize="!isAuthenticated()" href="/user/login" class="text-gray-700 hover:text-blue-500">🔑 로그인</a>
+                <a sec:authorize="!isAuthenticated()" href="/user/signup" class="text-gray-700 hover:text-blue-500">📝 회원가입</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+detection_Resnet50_Final.pth
+GFPGANv1.3.pth
+parsing_parsenet.pth
+RealESRGAN_x4plus.pth
