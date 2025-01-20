@@ -1,9 +1,7 @@
-![image](https://github.com/Hello-LSY/F-64/assets/81401604/19c9b6da-ff9c-4a9f-9422-bc4f1fd172e8)
-
-
 # EM - 사진동아리 F-64를 위한 사이트
+![f64 (2)](https://github.com/user-attachments/assets/80808c9b-3923-47d6-85fc-80b0e107dfcd)
 
-대학교에 입학하고 졸업할때까지 사진동아리에 몸담았었는데 딱히 커뮤니티가 없어서 있었으면 더 좋지 않았을까? 하는 생각으로 진행한 프로젝트입니다 😀 
+대학교에 입학하고 졸업할때까지 사진동아리에 몸담았었는데 플랫폼이 없어서 있었으면 더 좋지 않았을까? 하는 생각으로 진행한 프로젝트입니다 😀 
 
 ## 업데이트 내역
 
@@ -23,12 +21,14 @@
 
 24-03-05 전반적인 오류 수정
 
+25-01-20 프로젝트 전체 리팩토링
+
 ## 기술 스택
 
-- Spring
-- Flask(AI 업스케일링)
-- Bootstrap/Thymeleaf
-- Maria DB
+- Spring(boot)
+- Flask(AI 업스케일링) -> 스프링 자체 + 가상환경 이용
+- Bootstrap/Thymeleaf -> tailwind css/Thymeleaf
+- Maria DB -> mysql 
 
 ## ERD 및 구성도
 
@@ -45,11 +45,15 @@ new) 이미지 AI 업스케일링 구성도
 
 ### 로그인/회원가입
 
-<img width="50%" src="https://github.com/Hello-LSY/F-64/assets/81401604/fb0b7bf2-e1ae-4122-a9a4-a543ab9cec5a"/>
+![회원가입](https://github.com/user-attachments/assets/3c831da0-2500-4b05-89bc-c4e992d8a650)
+
+![로그인 - Clipchamp로 제작](https://github.com/user-attachments/assets/8110faa5-ae05-416f-b94a-0190d27ad550)
 
 ### 자유게시판
 
-<img width="50%" src="https://github.com/Hello-LSY/F-64/assets/81401604/b7739087-ad8b-4852-9ee8-b67a445f5435"/>
+![게시판생성,수정,제거 - Clipchamp로 제작](https://github.com/user-attachments/assets/14416179-31a1-425a-be3e-ef2a2874687a)
+
+![댓글, 삭제, 추천 - Clipchamp로 제작](https://github.com/user-attachments/assets/8da03107-9ae8-46f1-86fd-3fdbc3db9eb0)
 
 - CRUD 가능
 - 댓글 기능
@@ -58,7 +62,7 @@ new) 이미지 AI 업스케일링 구성도
 
 ### 문의 게시판
 
-<img width="50%" src="https://github.com/Hello-LSY/F-64/assets/81401604/bd2e35db-47c9-4a14-b452-f6fce75a1858"/>
+![문의 - Clipchamp로 제작](https://github.com/user-attachments/assets/eefb5231-6f46-4b03-8d5e-15f05f62af3f)
 
 - CRD 가능
 - 익명, 비밀글 토글
@@ -68,14 +72,15 @@ new) 이미지 AI 업스케일링 구성도
 
 ### 출사 신청 게시판
 
-<img width="50%" src="https://github.com/Hello-LSY/F-64/assets/81401604/0201725e-cb13-425f-9107-b8a6a03d8ec8"/>
+![출사지 - Clipchamp로 제작](https://github.com/user-attachments/assets/3a03938d-1514-4851-81ec-8faeaf28ff17)
 
 - kakaoMap API 사용
 - CRD 가능
+- 동선 표시, 지도미리보기 기능
 
 ### 행사 일정
 
-<img width="50%" src="https://github.com/Hello-LSY/F-64/assets/81401604/08cbfdc5-6765-40f7-949c-419f6fea327f"/>
+![행사일정 - Clipchamp로 제작](https://github.com/user-attachments/assets/fed53055-60ad-47f5-8160-1dc803f14dcf)
 
 - Fullcalendar 라이브러리 사용
 - 월/일 로 스케줄 CRD 가능
