@@ -28,11 +28,6 @@ public class BoardController {
     public String list(Model model, Pageable pageable) {
         Page<Board> boardPage = boardService.getBoardPage(pageable);
         List<Board> boardList = boardPage.getContent(); // Page<Board> → List<Board>
-
-        CustomUser user = userSecurityService.getCurrentUser();
-        String nickname = (user != null) ? user.getNickname() : "null";
-
-        model.addAttribute("nickname", nickname);
         model.addAttribute("boardList", boardList); // 기존 boardPage 대신 boardList 추가
         model.addAttribute("boardPage", boardPage); // 페이징을 위해 유지
 
@@ -41,8 +36,6 @@ public class BoardController {
 
     @GetMapping("/write")
     public String writeForm(Model model) {
-        CustomUser user = userSecurityService.getCurrentUser();
-        model.addAttribute("nickname", (user != null) ? user.getNickname() : "null");
         model.addAttribute("board", new Board());
         return "writeForm";
     }
@@ -70,10 +63,6 @@ public class BoardController {
     public String view(@PathVariable Long id, Model model, Authentication authentication) {
         Board board = boardService.getBoardAndIncreaseViewCount(id);
         model.addAttribute("board", board);
-
-        CustomUser user = userSecurityService.getCurrentUser();
-        String nickname = (user != null) ? user.getNickname() : "non-login status";
-        model.addAttribute("nickname", nickname);
 
         boolean isWriter = authentication != null && authentication.getName().equals(board.getWriterUsername());
         model.addAttribute("isWriter", isWriter);

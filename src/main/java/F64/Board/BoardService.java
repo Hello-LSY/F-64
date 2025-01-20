@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -114,15 +116,10 @@ public class BoardService {
         logger.info("삭제 요청 후 Board 테이블 확인 - 존재 여부: {}", exists);
     }
 
-
-
-
-
     public Page<Board> getBoardPage(Pageable pageable) {
-        Page<Board> boardPage = boardRepository.findAll(pageable);
-        logger.info("조회된 게시글 개수: {}", boardPage.getTotalElements());
-        return boardPage;
+        return boardRepository.findAllWithSorting(pageable);
     }
+
 
     public Board getBoardById(Long id) {
         return boardRepository.findById(id)
@@ -130,7 +127,7 @@ public class BoardService {
     }
 
     public List<Board> getBoardList() {
-        return boardRepository.findAll();
+        return boardRepository.findAllByOrderByCreatedDateDesc();
     }
 
 }

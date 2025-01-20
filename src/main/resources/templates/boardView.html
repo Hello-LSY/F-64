@@ -1,158 +1,157 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <script src="/js/bootstrap.min.js"></script>
-  <script src="/js/jquery-3.6.4.js"></script>
-  <title>게시글 상세보기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
-
-    .btn-group {
-        display: flex;
-        justify-content: flex-start;
-        margin-top: 20px;
-        gap: 10px;
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
     }
-    .btn {
-        margin-right: 1px;
-    }
-    .title {
-        font-size: 24px;
-        font-weight: bold;
-        padding-bottom: 10px;
-    }
-    .content {
-        font-size: 16px;
-        line-height: 1.5;
-    }
-    .info {
-        font-size: 14px;
-    }
-    .info span {
-        margin-right: 10px;
-    }
-    .appending_file_box ul li a {
-      text-decoration: none; /* 밑줄 제거 */
-      color: gray; /* 회색 폰트 색상 적용 */
-    }
-</style>
+  </style>
+  <title>게시글 상세보기</title>
 </head>
 <body>
 
-
 <div th:replace="layout/navbar :: fragment"></div>
 
-<div class="container">
-<table class="table">
-  <tbody>
-  <tr>
-    <td class="title" colspan="2" th:text="${board.title}"></td>
-  </tr>
-  <tr>
-    <td colspan="2" class="info">
-      <span>작성자:</span>
-      <span th:text="${board.writerNickname}"></span>
-      <span>작성일자:</span>
-      <span th:text="${#temporals.format(board.createdDate, 'yyyy/MM/dd HH:mm')}"></span>
-      <span>조회수:</span>
-      <span th:text="${board.viewCount}"></span>
-      <span>추천수:</span>
-      <span th:text="${board.likeCount}"></span>
-    </td>
-  </tr>
-  <tr>
-    <td class="content" colspan="2" th:text="${board.content}"></td>
-  </tr>
-  <tr>
-    <td colspan="2" class="image-container">
-      <img th:if="${board.filepath}" th:src="@{/files/__${board.filename}__}" alt="Board Image" style="max-width: 100%; max-height: 300px;">
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2" class="btn-group">
-      <form sec:authorize="isAuthenticated()" id="like-button" method="post" th:action="@{/board/like/{id}(id=${board.id})}">
-        <button type="submit" class="btn btn-success">추천</button>
-      </form>
-      <form id="back" method="get" th:action="@{/board/list}">
-        <button type="submit" class="btn btn-primary">글 목록</button>
-      </form>
-      <form th:if="${isWriter}" id="update" method="get" th:action="@{/board/update/{id}(id=${board.id})}">
-        <button type="submit" class="btn btn-primary">글 수정</button>
-      </form>
-      <form th:if="${isWriter}" id="delete" method="post" th:action="@{/board/delete/{id}(id=${board.id})}" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
-        <button type="submit" class="btn btn-primary">글 삭제</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
+<!-- 메인 컨테이너 -->
+<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 mt-6">
+  <h1 class="text-3xl font-bold text-gray-800 mb-4" th:text="${board.title}"></h1>
 
-  <div class="appending_file_box">
-    <strong>첨부 파일</strong>
-    <ul class="appending_file">
-      <li>
-        <a th:if="${board.filepath}" th:href="@{/files/__${board.filename}__}" th:download="${board.filename}">
-          <!-- 파일 이름 표시 -->
-          <span th:text="${board.filename}"></span>
-        </a>
-      </li>
-    </ul>
+  <div class="flex items-center text-gray-500 text-sm mb-4">
+    <span class="mr-4">작성자: <span th:text="${board.writerNickname}"></span></span>
+    <span class="mr-4">작성일: <span th:text="${#temporals.format(board.createdDate, 'yyyy/MM/dd HH:mm')}"></span></span>
+    <span class="mr-4">조회수: <span th:text="${board.viewCount}"></span></span>
+    <span>추천수: <span id="likeCount" th:text="${board.likeCount}"></span></span>
   </div>
 
+  <div class="border-t pt-4 text-gray-700" th:text="${board.content}"></div>
 
-
-<div  th:if="${commentList}" class="card mt-5">
-  <div class="card-header">
-    <h5 class="card-title" style="font-weight: bold;">댓글 목록</h5>
+  <div class="mt-6">
+    <img th:if="${board.filepath}" th:src="@{${board.filepath}}" alt="Board Image"
+         class="rounded-lg shadow-md w-full max-h-96 object-cover">
   </div>
-  <div class="card-body table-responsive">
-    <table class="table table-striped">
-      <thead class="thead-dark">
-      <tr>
-        <th>내용</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="comment : ${commentList}">
-        <td>
-          <div>
-            <span style="font-weight: bold" th:text="${comment.writerNickname}"></span>
-            <small th:text="${#temporals.format(comment.createdDate, 'yyyy/MM/dd HH:mm')}"></small>
-          </div>
-          <div th:text="${comment.content}"></div>
-        </td>
-        <td>
-          <form th:if="${isCommentWriter}" th:action="@{/board/view/{boardId}/comment/delete/{commentId}(boardId=${board.id}, commentId=${comment.id})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
-            <button type="submit" class="btn btn-danger delete-comment-btn">삭제</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
 
+  <div class="mt-6 flex gap-4">
+    <!-- 추천 버튼 -->
+    <button id="like-button" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md flex items-center">
+      👍 추천 (<span id="likeButtonCount" th:text="${board.likeCount}"></span>)
+    </button>
 
-<div class="card mt-5">
-  <div class="card-header">
-    <h5 class="card-title" style="font-weight: bold;" >댓글 작성</h5>
-  </div>
-  <div class="card-body">
-    <form method="post" th:action="@{/board/comment/{id}(id=${board.id})}">
-      <div class="form-group">
-        <textarea class="form-control" rows="2" name="content"></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">작성하기</button>
+    <form id="back" method="get" th:action="@{/board/list}">
+      <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">📃 목록</button>
+    </form>
+    <form th:if="${isWriter}" id="update" method="get" th:action="@{/board/update/{id}(id=${board.id})}">
+      <button type="submit" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md">✏️ 수정</button>
+    </form>
+    <form th:if="${isWriter}" id="delete" method="post"
+          th:action="@{/board/delete/{id}(id=${board.id})}"
+          onsubmit="return confirm('정말로 삭제하시겠습니까?')">
+      <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">🗑️ 삭제</button>
     </form>
   </div>
 </div>
 
+<!-- 댓글 목록 -->
+<div class="max-w-4xl mx-auto mt-6">
+  <h2 class="text-xl font-semibold text-gray-800 mb-4">💬 댓글</h2>
+  <div id="comment-list" class="space-y-4">
+    <div th:each="comment : ${commentList}" th:id="'comment-' + ${comment.id}" class="p-4 bg-gray-100 rounded-lg shadow-md">
+      <div class="text-gray-600 text-sm">
+        <span class="font-semibold text-gray-800" th:text="${comment.writerNickname}"></span>
+        <span class="ml-2" th:text="${#temporals.format(comment.createdDate, 'yyyy/MM/dd HH:mm')}"></span>
+      </div>
+      <p class="text-gray-700 mt-2" th:text="${comment.content}"></p>
+
+      <!-- 현재 로그인한 사용자가 댓글 작성자와 동일할 경우 삭제 버튼 표시 -->
+      <button th:if="${#authentication.name == comment.writerUsername}"
+              th:attr="data-comment-id=${comment.id}"
+              class="delete-comment-btn text-red-500 text-sm mt-2 hover:underline">🗑 삭제</button>
+    </div>
+  </div>
 </div>
 
+<!-- 댓글 입력 -->
+<div class="max-w-4xl mx-auto mt-6 bg-white shadow-md rounded-lg p-6">
+  <h2 class="text-lg font-semibold text-gray-800 mb-3">✍️ 댓글 작성</h2>
+  <form id="comment-form" method="post">
+    <textarea id="comment-content" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              rows="2" name="content" placeholder="댓글을 입력하세요..."></textarea>
+    <button type="submit" class="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">💬 작성하기</button>
+  </form>
+</div>
 
+<script>
+  $(document).ready(function () {
+    let boardId = [[${board.id}]];
 
+    // 추천 버튼 (AJAX 적용)
+    $("#like-button").click(function () {
+      $.post("/board/like/" + boardId, function (data) {
+        if (data.success) {
+          $("#likeCount").text(data.likeCount);
+          $("#likeButtonCount").text(data.likeCount);
+          alert("추천 완료!");
+        } else {
+          alert(data.message);
+        }
+      }).fail(function (xhr) {
+        if (xhr.status === 401) {
+          alert("로그인이 필요합니다.");
+          window.location.href = "/login";
+        } else {
+          alert("추천 요청에 실패했습니다.");
+        }
+      });
+    });
+
+    // 댓글 작성 (AJAX 적용)
+    $("#comment-form").submit(function (event) {
+      event.preventDefault();
+      let content = $("#comment-content").val().trim();
+
+      if (content === "") {
+        alert("댓글을 입력하세요.");
+        return;
+      }
+
+      $.post("/board/comment/" + boardId, { content: content }, function () {
+        location.reload(); // 새로고침하여 댓글 반영
+      }).fail(function (xhr) {
+        if (xhr.status === 401) {
+          alert("로그인이 필요합니다.");
+          window.location.href = "/login";
+        } else {
+          alert("댓글 작성 실패");
+        }
+      });
+    });
+
+    // 댓글 삭제 (AJAX 적용)
+    $(".delete-comment-btn").click(function () {
+      let commentId = $(this).attr("data-comment-id");
+
+      if (!confirm("정말로 댓글을 삭제하시겠습니까?")) return;
+
+      $.post("/board/view/" + boardId + "/comment/delete/" + commentId, function () {
+        $("#comment-" + commentId).remove();
+        alert("댓글이 삭제되었습니다.");
+      }).fail(function (xhr) {
+        if (xhr.status === 401) {
+          alert("로그인이 필요합니다.");
+          window.location.href = "/login";
+        } else {
+          alert("댓글 삭제 실패");
+        }
+      });
+    });
+
+  });
+</script>
 
 </body>
 </html>
