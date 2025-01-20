@@ -2,96 +2,82 @@ package F64.Inquiry;
 
 import F64.User.CustomUser;
 import F64.User.UserSecurityService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Controller
+@RequiredArgsConstructor
+@RequestMapping("/inquiry")
 public class InquiryController {
 
+    private final InquiryService inquiryService;
+    private final InquiryRepository inquiryRepository;
+    private final UserSecurityService userSecurityService;
 
-    @Autowired
-    private InquiryRepository inquiryRepository;
-    @Autowired
-    private InquiryService inquiryService;
-    @Autowired
-    private UserSecurityService userSecurityService;
-
-    @GetMapping("/inquiry/list")
+    /** 문의 리스트 조회 */
+    @GetMapping("/list")
     public String showInquiryList(Model model) {
         List<Inquiry> inquiries = inquiryService.getInquiryList();
-
-
         CustomUser user = userSecurityService.getCurrentUser();
-        String nickname = user != null ? user.getNickname() : "non-login status";
-        model.addAttribute("nickname", nickname);
+        model.addAttribute("nickname", user != null ? user.getNickname() : "Guest");
         model.addAttribute("inquiries", inquiries);
-        return "inquiryListForm";
+        return "inquiryList";
     }
 
-    @GetMapping("/inquiry/submit")
-    public String InquirySubmitForm(Model model){
+    /** 문의 작성 폼 */
+    @GetMapping("/submit")
+    public String inquirySubmitForm(Model model) {
         CustomUser user = userSecurityService.getCurrentUser();
-        String nickname = user != null ? user.getNickname() : "null";
-        model.addAttribute("nickname", nickname);
-        return "inquirySubmitForm";
+        model.addAttribute("nickname", user != null ? user.getNickname() : "Guest");
+        return "inquirySubmit";
     }
 
-    @PostMapping("/inquiry/submitpro")
-    public String InquirySubmitPro(Inquiry inquiry){
+    /** 문의 등록 */
+    @PostMapping("/submitpro")
+    public String inquirySubmitPro(@ModelAttribute Inquiry inquiry) {
+        CustomUser user = userSecurityService.getCurrentUser();
+        if (user == null) {
+            return "redirect:/user/login"; // 🔹 로그인하지 않은 경우 로그인 페이지로 리디렉트
+        }
+
+        inquiry.setNickname(user.getNickname()); // 작성자 닉네임 추가
         inquiryService.writeInquiry(inquiry);
         return "redirect:/inquiry/list";
     }
 
-    @GetMapping("/inquiry/details/{id}")
-    public String showInquiryDetails(@PathVariable("id") Long id, Model model, Authentication authentication) {
-        Optional<Inquiry> inquiry = inquiryRepository.findById(id);
+    /** 문의 상세 조회 */
+    @GetMapping("/details/{id}")
+    public String showInquiryDetails(@PathVariable("id") Long id, Model model) {
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("문의글을 찾을 수 없습니다."));
 
-        if (inquiry.isPresent()) {
-            Inquiry actualInquiry = inquiry.get();
-            CustomUser user = userSecurityService.getCurrentUser();
+        CustomUser user = userSecurityService.getCurrentUser();
+        boolean isWriter = user != null && (user.getNickname().equals(inquiry.getNickname()) || "admin".equals(user.getNickname()));
+        boolean isAdmin = user != null && "admin".equals(user.getNickname());
 
-            if (user == null) {
-                throw new NoSuchElementException("non-login-status");
-            }
-
-            String inqNickname = actualInquiry.getNickname();
-            String userNickname = user.getNickname();
-
-            boolean isWriter = userNickname.equals(inqNickname) || userNickname.equals("admin");
-            boolean isAdmin = userNickname.equals("admin");
-
-            model.addAttribute("inquiry", actualInquiry);
-            model.addAttribute("isWriter", isWriter);
-            model.addAttribute("isAdmin", isAdmin);
-            model.addAttribute("nickname", userNickname);
-
-            return "inquiryDetails";
-        } else {
-            throw new NoSuchElementException("Inquiry not found");
-        }
+        model.addAttribute("inquiry", inquiry);
+        model.addAttribute("isWriter", isWriter);
+        model.addAttribute("isAdmin", isAdmin);
+        return "inquiryDetails";
     }
 
 
-    @PostMapping("/inquiry/answer/{id}")
+    /** 관리자 답변 작성 */
+    @PostMapping("/answer/{id}")
     public String saveAnswer(@PathVariable("id") Long id, @RequestParam("answer") String answer) {
         inquiryService.saveAnswer(id, answer);
-        return "redirect:/inquiry/details/{id}";
+        return "redirect:/inquiry/details/" + id;
     }
 
-    @PostMapping("/inquiry/delete/{id}")
-    public String deleteInquiry(@PathVariable("id") Long id){
+    /** 문의 삭제 (동기 방식) */
+    @PostMapping("/delete/{id}")
+    public String deleteInquiry(@PathVariable("id") Long id) {
         inquiryService.deleteInquiry(id);
-        return "redirect:/inquiry/list";
+        return "redirect:/inquiry/list"; // 🔹 삭제 후 문의 목록 페이지로 이동
     }
-
 }

@@ -2,47 +2,47 @@ package F64.Inquiry;
 
 import F64.User.CustomUser;
 import F64.User.UserSecurityService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class InquiryService {
 
-    @Autowired
-    private InquiryRepository inquiryRepository;
+    private final InquiryRepository inquiryRepository;
+    private final UserSecurityService userSecurityService;
 
-    @Autowired
-    private UserSecurityService userSecurityService;
-
-
-    public void writeInquiry(Inquiry inquiry){
+    @Transactional
+    public void writeInquiry(Inquiry inquiry) {
+        CustomUser user = userSecurityService.getCurrentUser();
+        if (user == null) throw new IllegalStateException("로그인이 필요합니다.");
 
         inquiry.setCreatedDate(LocalDateTime.now());
-        CustomUser user = userSecurityService.getCurrentUser();
         inquiry.setNickname(user.getNickname());
         inquiryRepository.save(inquiry);
     }
 
+    @Transactional
     public void saveAnswer(Long id, String answer) {
         Inquiry inquiry = inquiryRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("해당 문의글이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 문의글이 없습니다."));
         inquiry.setAnswer(answer);
         inquiryRepository.save(inquiry);
     }
 
-    public List<Inquiry> getInquiryList(){
-        List<Inquiry> inquiryList = inquiryRepository.findAll();
-        Collections.reverse(inquiryList); // 리스트를 역순으로 정렬
-        return inquiryList;
+    public List<Inquiry> getInquiryList() {
+        return inquiryRepository.findAllByOrderByCreatedDateDesc();
     }
 
-    public void deleteInquiry(Long id){
-        Inquiry inquiry = inquiryRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("아이디가 없습니다."));
+    @Transactional
+    public void deleteInquiry(Long id) {
+        if (!inquiryRepository.existsById(id)) {
+            throw new IllegalArgumentException("해당 문의글이 존재하지 않습니다.");
+        }
         inquiryRepository.deleteById(id);
     }
 }
