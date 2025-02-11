@@ -3,9 +3,7 @@ package F64.Upscale;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -17,14 +15,18 @@ import java.util.regex.Pattern;
 @Controller
 public class ImageController {
 
-    // Python 실행 파일 (가상환경)
-    private static final String PYTHON_EXE = "C:\\Users\\USER\\Desktop\\F-64\\f64_image_upscaler\\venv\\Scripts\\python.exe";
-    // Python 스크립트 절대경로
-    private static final String PYTHON_SCRIPT_PATH = "C:\\Users\\USER\\Desktop\\F-64\\f64_image_upscaler\\inference_realesrgan.py";
-
-    // 업로드 디렉토리 (application.properties)
+    // 1) application.properties에서 주입받는 값들
     @Value("${upload.path}")
-    private String uploadDir; // C:/upload
+    private String uploadDir;
+
+    @Value("${f64.python.exe}")
+    private String pythonExePath;
+
+    @Value("${f64.python.script}")
+    private String pythonScriptPath;
+
+    @Value("${f64.python.workingdir}")
+    private String pythonWorkingDir;
 
     @GetMapping("/upload")
     public String showUploadForm() {
@@ -41,7 +43,7 @@ public class ImageController {
             String resultDir = uploadDir + File.separator + "result";
             createDirectoryIfNotExist(resultDir);
 
-            // 2) 파일 저장 (파일명에 한글 포함 여부 체크)
+            // 2) 파일 저장
             File imageFile = saveMultipartFile(image, uploadDir);
 
             // 3) 파이썬 스크립트 실행
@@ -61,17 +63,13 @@ public class ImageController {
             }
 
             // 5) URL 경로 (HTTP) 구성
-            // 원본 파일명
-            String originalFilename = imageFile.getName(); // ex) "myPhoto.png"
-            // => /upload/myPhoto.png
+            String originalFilename = imageFile.getName();
             String originalUrl = "/upload/" + originalFilename;
 
-            // 결과 파일명
-            String resultFilename = Paths.get(savedPath).getFileName().toString(); // e.g. "myPhoto_upscaled.png"
-            // => /upload/result/myPhoto_upscaled.png
+            String resultFilename = Paths.get(savedPath).getFileName().toString();
             String resultUrl = "/upload/result/" + resultFilename;
 
-            // 6) 뷰에 전달
+            // 6) 뷰에 데이터 전달
             model.addAttribute("original_image_path", originalUrl);
             model.addAttribute("result_image_path", resultUrl);
 
@@ -84,20 +82,23 @@ public class ImageController {
     /**
      * 파이썬 스크립트 실행
      */
-    private String runPythonUpscale(String inputPath, String outputPath, String ext, boolean faceEnhance)
+    private String runPythonUpscale(String inputPath,
+                                    String outputPath,
+                                    String ext,
+                                    boolean faceEnhance)
             throws IOException, InterruptedException {
 
         ProcessBuilder pb = new ProcessBuilder(
-                PYTHON_EXE,
-                PYTHON_SCRIPT_PATH,
+                pythonExePath,      // application.properties에서 주입받은 경로
+                pythonScriptPath,   // application.properties에서 주입받은 경로
                 "-i", inputPath,
                 "-o", outputPath,
                 "--ext", ext,
                 "--gpu-id", "0"
         );
 
-        // 작업 디렉토리 지정
-        pb.directory(new File("C:\\Users\\USER\\Desktop\\F-64\\f64_image_upscaler"));
+        // **파이썬 작업 디렉토리**도 application.properties로 옮김
+        pb.directory(new File(pythonWorkingDir));
 
         if (faceEnhance) {
             pb.command().add("--face_enhance");
@@ -115,9 +116,6 @@ public class ImageController {
         return outputLog;
     }
 
-    /**
-     * upscaled.png 찾기
-     */
     private String parseSavedPath(String outputLog) {
         for (String line : outputLog.split("\n")) {
             if (line.trim().startsWith("Saved:")) {
@@ -127,9 +125,6 @@ public class ImageController {
         return null;
     }
 
-    /**
-     * Stream -> String
-     */
     private String readStream(InputStream is) throws IOException {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
             StringBuilder sb = new StringBuilder();
@@ -141,9 +136,6 @@ public class ImageController {
         }
     }
 
-    /**
-     * 폴더 생성
-     */
     private void createDirectoryIfNotExist(String dirPath) throws IOException {
         Path path = Paths.get(dirPath);
         if (!Files.exists(path)) {
@@ -151,23 +143,17 @@ public class ImageController {
         }
     }
 
-    /**
-     * MultipartFile -> File (한글/공백 파일명 방지)
-     */
     private File saveMultipartFile(MultipartFile multipartFile, String dir) throws IOException {
         String originalFilename = multipartFile.getOriginalFilename();
         if (originalFilename == null || originalFilename.isEmpty()) {
             throw new IllegalArgumentException("파일명이 비어있습니다.");
         }
 
-        // 한글/공백/특수문자 검사 (정규식 예시)
-        // 아래는 "영문자, 숫자, _, ., -" 만 허용
-        // 필요하다면 더 세부 조정 가능
+        // "영문, 숫자, _, ., -" 외 문자 금지
         if (!Pattern.matches("^[a-zA-Z0-9_.\\-]+$", originalFilename)) {
-            throw new IllegalArgumentException("파일명에 한글 또는 특수문자가 포함되어 있습니다: " + originalFilename);
+            throw new IllegalArgumentException("파일명에 한글/특수문자가 포함되어 있습니다: " + originalFilename);
         }
 
-        // 파일 저장
         File targetDir = new File(dir);
         if (!targetDir.exists()) {
             targetDir.mkdirs();
